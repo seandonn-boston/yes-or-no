@@ -118,12 +118,20 @@ tests/          rule tests
 
 Highcharts is free for personal and non-commercial use and needs a paid licence for commercial use. All charts go through `components/Chart.tsx` and `lib/charts.ts`, so swapping in another library touches two files.
 
+## Launch features
+
+- **Phone verification.** Signup is two steps: details, then a code texted by Twilio Verify. The account only exists once the code checks out; the number is kept for at most 15 minutes and only its hash afterwards. Without Twilio keys, development prints the code to the server log (or uses `SMS_DEV_CODE`), and production refuses signups.
+- **Rate limits** (`lib/rate-limit.ts`) on code sends, signups, logins, votes, asks, reports, checkout and the public APIs, stored in Postgres so they hold across server instances.
+- **Moderation.** New questions with personal details are refused; ones that may name a private person, or that a model flags as harmful, are held for review. With `ANTHROPIC_API_KEY` a model also catches repeats worded differently and picks the subject. Any account can report a question; reports from `REPORT_THRESHOLD` accounts take it out of feeds. Moderators work through `/mod`: approve, remove, archive, merge as a repeat, or change the subject. Every decision is logged. `npm run admin:role -- <username> moderator` makes a moderator.
+- **Your data.** `/settings` downloads everything held about an account as JSON and deletes the account: current votes are withdrawn from every tally, and the dated history moves to an anonymous stand-in record with no username, phone, password or payment details.
+- **Terms and privacy.** Drafts at `/terms` and `/privacy`, marked as drafts until `LEGAL_DRAFT` in `lib/legal.ts` is turned off after legal review.
+- **Membership.** `/membership` opens Stripe Checkout for the $5 monthly plan; a webhook sets the account's tier from the subscription's status, and Stripe's billing portal handles cards and cancelling. Without Stripe keys, development switches the tier directly.
+- **Deployment.** Vercel + Neon, with migrations on every build, `/api/health`, security headers, JSON error logs, and CI on GitHub Actions. Step-by-step setup is in [DEPLOY.md](DEPLOY.md).
+
 ## Not built yet
 
-- SMS confirmation of the phone number (the number is taken on trust for now)
-- Model-based duplicate and question-quality check (`lib/moderation.ts` is the hook; today only exact repeats are refused)
 - Verification, attribute attestations (home state, age band), and demographic filters
-- Follows, profiles, tags, and sorting user-asked questions into subjects
+- Follows, profiles and tags
 - Question families, event dates, archiving and "Did X happen?" successors
-- Payments, API key management and metering, embeds, reporting and moderator tools
+- API key management and metering, embeds, password reset by text
 - Search cap for visitors without an account

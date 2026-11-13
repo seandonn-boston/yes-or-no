@@ -1,7 +1,7 @@
 import { query } from "./db";
 import { LIMITS, TODAY_UTC } from "./limits";
 import type { Account } from "./auth";
-import { findDuplicate } from "./moderation";
+import { screenQuestion } from "./moderation";
 
 export type Question = { id: number; text: string; status: string; category: string; created_at: Date };
 export type Match = Question & { similarity: number };
@@ -50,7 +50,7 @@ export async function search(text: string, limit = 10): Promise<Match[]> {
   return query<Match>(
     `select id, text, status, category, created_at, similarity(normalized, $1)::float as similarity
        from questions
-      where status <> 'removed'
+      where status in ('active', 'archived')
         and (normalized % $1 or normalized like '%' || $2 || '%')
       order by similarity desc, created_at
       limit $3`,
@@ -66,7 +66,9 @@ export async function getQuestion(id: number): Promise<Question | null> {
   return rows[0] ?? null;
 }
 
-export type AskResult = { ok: true; id: number } | { ok: false; error: string; existingId?: number };
+export type AskResult =
+  | { ok: true; id: number; held: boolean }
+  | { ok: false; error: string; existingId?: number };
 
 export async function ask(account: Account, raw: string): Promise<AskResult> {
   const problem = booleanProblem(raw);
@@ -75,8 +77,7 @@ export async function ask(account: Account, raw: string): Promise<AskResult> {
   const text = tidy(raw);
   const matches = await search(text, 5);
   const exact = matches.find((m) => normalize(m.text) === normalize(text));
-  const existingId = exact?.id ?? (await findDuplicate(text, matches));
-  if (existingId) return { ok: false, error: "That question has already been asked.", existingId };
+  if (exact) return { ok: false, error: "That question has already been asked.", existingId: exact.id };
 
   const limit = LIMITS[account.tier].questionsPerDay;
   if (Number.isFinite(limit)) {
@@ -87,11 +88,25 @@ export async function ask(account: Account, raw: string): Promise<AskResult> {
     if (n >= limit) return { ok: false, error: `You've asked ${limit} questions today. Try again tomorrow.` };
   }
 
+  const screen = await screenQuestion(text, matches);
+  if (screen.reject) return { ok: false, error: screen.reject };
+  if (screen.duplicateOf) return { ok: false, error: "That question has already been asked.", existingId: screen.duplicateOf };
+
   const rows = await query<{ id: number }>(
-    `insert into questions (text, normalized, asked_by) values ($1, $2, $3)
+    `insert into questions (text, normalized, asked_by, category, status, held_reason)
+     values ($1, $2, $3, $4, $5, $6)
      on conflict (normalized) do nothing returning id`,
-    [text, normalize(text), account.id],
+    [text, normalize(text), account.id, screen.category, screen.hold ? "review" : "active", screen.hold ?? null],
   );
   if (!rows[0]) return { ok: false, error: "That question has already been asked." };
-  return { ok: true, id: rows[0].id };
+  return { ok: true, id: rows[0].id, held: Boolean(screen.hold) };
+}
+
+// Where a removed question now lives, if it was merged into another.
+export async function mergedInto(id: number): Promise<number | null> {
+  const rows = await query<{ duplicate_of: number | null }>(
+    "select duplicate_of from questions where id = $1 and status = 'removed'",
+    [id],
+  );
+  return rows[0]?.duplicate_of ?? null;
 }

@@ -7,7 +7,8 @@ import type { Tier } from "./limits";
 const SESSION_COOKIE = "bm_session";
 const SESSION_DAYS = 30;
 
-export type Account = { id: number; username: string; tier: Tier; verified: boolean };
+export type Role = "user" | "moderator" | "admin";
+export type Account = { id: number; username: string; tier: Tier; verified: boolean; role: Role };
 
 export function normalizePhone(raw: string): string | null {
   let digits = raw.replace(/\D/g, "");
@@ -66,13 +67,13 @@ export const getAccount = cache(async (): Promise<Account | null> => {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
   const rows = await query<Account & { stale: boolean }>(
-    `select a.id, a.username, a.tier, a.verified, a.last_active_at < now() - interval '1 hour' as stale
+    `select a.id, a.username, a.tier, a.verified, a.role, a.last_active_at < now() - interval '1 hour' as stale
        from sessions s join accounts a on a.id = s.account_id
-      where s.token_hash = $1 and s.expires_at > now()`,
+      where s.token_hash = $1 and s.expires_at > now() and a.deleted_at is null`,
     [hashToken(token)],
   );
   const row = rows[0];
   if (!row) return null;
   if (row.stale) await query("update accounts set last_active_at = now() where id = $1", [row.id]);
-  return { id: row.id, username: row.username, tier: row.tier, verified: row.verified };
+  return { id: row.id, username: row.username, tier: row.tier, verified: row.verified, role: row.role };
 });

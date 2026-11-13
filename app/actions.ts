@@ -3,10 +3,15 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { query } from "@/lib/db";
-import {
-  endSession, getAccount, hashPassword, hashPhone, normalizePhone, startSession, verifyPassword,
-} from "@/lib/auth";
+import { endSession, getAccount, startSession, verifyPassword } from "@/lib/auth";
+import { hit, RULES, tooMany } from "@/lib/rate-limit";
+import { clientIp } from "@/lib/request";
+import { resendCode, startSignup, verifySignup } from "@/lib/signup";
 import { toCard, type CardItem } from "@/lib/cards";
+import { deleteAccount } from "@/lib/account";
+import { billingPortal, cancelForDeletion, startCheckout } from "@/lib/billing";
+import { CATEGORIES } from "@/lib/categories";
+import { decide, report, REPORT_REASONS, type Decision, type ReportReason } from "@/lib/moderation";
 import { ask } from "@/lib/questions";
 import { VIEW_COOKIE, VIEWS, type View } from "@/lib/view";
 import {
@@ -57,45 +62,44 @@ const source = (form: FormData): Source => {
 };
 
 export async function signupAction(form: FormData) {
-  const username = str(form, "username").toLowerCase();
-  const password = String(form.get("password") ?? "");
-  const phone = normalizePhone(str(form, "phone"));
   const next = backPath(form);
-  const fail = (message: string) => redirect(withError(`/signup?next=${encodeURIComponent(next)}`, message));
+  const result = await startSignup({
+    username: str(form, "username"),
+    phone: str(form, "phone"),
+    password: String(form.get("password") ?? ""),
+    adult: form.get("adult") === "on",
+    consent: form.get("consent") === "on",
+    next,
+    ip: await clientIp(),
+  });
+  if (!result.ok) redirect(withError(`/signup?next=${encodeURIComponent(next)}`, result.error));
+  redirect(`/signup/verify?t=${result.token}`);
+}
 
-  if (!/^[a-z0-9_]{3,20}$/.test(username)) fail("Usernames are 3 to 20 letters, numbers or underscores.");
-  if (password.length < 8) fail("Passwords need at least 8 characters.");
-  if (!phone) fail("Enter a valid phone number, with country code if outside the US or Canada.");
-  if (form.get("adult") !== "on") fail("You must be 18 or older to hold an account.");
-  if (form.get("consent") !== "on") fail("You need to accept the consent agreement to create an account.");
-
-  let accountId: number;
-  try {
-    const rows = await query<{ id: number }>(
-      `insert into accounts (username, phone_hash, password_hash, consented_at)
-       values ($1, $2, $3, now()) returning id`,
-      [username, hashPhone(phone!), hashPassword(password)],
-    );
-    accountId = rows[0].id;
-  } catch (err) {
-    const e = err as { code?: string; constraint?: string };
-    if (e.code !== "23505") throw err;
-    return fail(
-      e.constraint?.includes("phone")
-        ? "That phone number already has an account."
-        : "That username is taken.",
-    );
+export async function verifySignupAction(form: FormData) {
+  const token = str(form, "token");
+  const result = await verifySignup(token, str(form, "code"));
+  if (!result.ok) {
+    redirect(result.restart ? withError("/signup", result.error) : withError(`/signup/verify?t=${token}`, result.error));
   }
-  await startSession(accountId);
-  redirect(next);
+  await startSession(result.accountId);
+  redirect(result.next.startsWith("/") && !result.next.startsWith("//") ? result.next : "/");
+}
+
+export async function resendCodeAction(form: FormData) {
+  const token = str(form, "token");
+  const result = await resendCode(token, await clientIp());
+  redirect(result.ok ? `/signup/verify?t=${token}&sent=1` : withError(`/signup/verify?t=${token}`, result.error!));
 }
 
 export async function loginAction(form: FormData) {
   const username = str(form, "username").toLowerCase();
   const password = String(form.get("password") ?? "");
   const next = backPath(form);
+  const limited = await hit([RULES.loginPerIp, await clientIp()], [RULES.loginPerName, username]);
+  if (limited) redirect(withError(`/login?next=${encodeURIComponent(next)}`, tooMany(limited)));
   const rows = await query<{ id: number; password_hash: string }>(
-    "select id, password_hash from accounts where username = $1",
+    "select id, password_hash from accounts where username = $1 and deleted_at is null",
     [username],
   );
   if (!rows[0] || !verifyPassword(password, rows[0].password_hash)) {
@@ -112,8 +116,10 @@ export async function logoutAction() {
 
 export async function askAction(form: FormData) {
   const account = await requireAccount(form);
+  const limited = await hit([RULES.asksPerAccount, String(account.id)]);
+  if (limited) redirect(withError(backPath(form), tooMany(limited)));
   const result = await ask(account, str(form, "text"));
-  if (result.ok) redirect(`/q/${result.id}`);
+  if (result.ok) redirect(`/q/${result.id}${result.held ? "?held=1" : ""}`);
   if (result.existingId) redirect(withError(`/q/${result.existingId}`, result.error));
   redirect(withError(backPath(form), result.error));
 }
@@ -121,6 +127,8 @@ export async function askAction(form: FormData) {
 export async function voteAction(form: FormData) {
   const account = await requireAccount(form);
   const back = backPath(form);
+  const limited = await hit([RULES.votesPerAccount, String(account.id)]);
+  if (limited) redirect(withError(back, tooMany(limited)));
   const id = questionId(form);
   const value = str(form, "value") as VoteValue;
   if (!id || !VOTE_VALUES.includes(value)) redirect(withError(back, "That vote wasn't valid."));
@@ -191,6 +199,8 @@ const validId = (id: number) => Number.isInteger(id) && id > 0;
 export async function voteInline(input: InlineInput & { value: string; isPrivate: boolean }): Promise<InlineResult> {
   const account = await getAccount();
   if (!account) return { ok: false, error: "Sign in to vote." };
+  const limited = await hit([RULES.votesPerAccount, String(account.id)]);
+  if (limited) return { ok: false, error: tooMany(limited) };
   if (!validId(input.questionId) || !VOTE_VALUES.includes(input.value as VoteValue)) {
     return { ok: false, error: "That vote wasn't valid." };
   }
@@ -213,4 +223,75 @@ export async function skipInline(input: InlineInput): Promise<{ ok: boolean }> {
   if (!account || !validId(input.questionId)) return { ok: false };
   await skip(account, input.questionId);
   return { ok: true };
+}
+
+// ---------- Reports and moderation ----------
+
+export async function reportAction(form: FormData) {
+  const account = await requireAccount(form);
+  const back = backPath(form);
+  const id = questionId(form);
+  const reason = str(form, "reason") as ReportReason;
+  if (!id || !REPORT_REASONS.some((r) => r.value === reason)) redirect(withError(back, "Choose a reason for the report."));
+  const limited = await hit([RULES.reportsPerAccount, String(account.id)]);
+  if (limited) redirect(withError(back, tooMany(limited)));
+  await report(account.id, id!, reason, str(form, "note"));
+  const [base, search = ""] = withoutError(back).split("?");
+  const params = new URLSearchParams(search);
+  params.set("reported", "1");
+  redirect(`${base}?${params}`);
+}
+
+export async function moderateAction(form: FormData) {
+  const account = await getAccount();
+  if (!account || account.role === "user") redirect("/");
+  const id = questionId(form);
+  const action = str(form, "action");
+  let decision: Decision | null = null;
+  if (action === "approve" || action === "remove" || action === "archive") decision = { action };
+  if (action === "duplicate") {
+    const of = Number(str(form, "of").replace(/^#/, ""));
+    if (Number.isInteger(of) && of > 0) decision = { action, of };
+  }
+  if (action === "category") {
+    const category = str(form, "category");
+    const match = CATEGORIES.find((c) => c.slug === category);
+    if (match) decision = { action, category: match.slug };
+  }
+  if (!id || !decision) redirect(withError("/mod", "That decision wasn't complete."));
+  const error = await decide(account!.id, id!, decision!);
+  redirect(error ? withError("/mod", error) : `/mod?done=${id}`);
+}
+
+// ---------- Membership ----------
+
+export async function checkoutAction(form: FormData) {
+  const account = await requireAccount(form);
+  const limited = await hit([RULES.checkoutPerAccount, String(account.id)]);
+  if (limited) redirect(withError("/membership", tooMany(limited)));
+  const result = await startCheckout(account);
+  redirect("url" in result ? result.url : withError("/membership", result.error));
+}
+
+export async function billingPortalAction(form: FormData) {
+  const account = await requireAccount(form);
+  const result = await billingPortal(account);
+  redirect("url" in result ? result.url : withError("/settings", result.error));
+}
+
+// ---------- Account ----------
+
+export async function deleteAccountAction(form: FormData) {
+  const account = await requireAccount(form);
+  const fail = (message: string) => redirect(withError("/settings", message));
+  if (str(form, "confirm").toLowerCase() !== account.username) fail("Type your username to confirm.");
+  const [row] = await query<{ password_hash: string }>("select password_hash from accounts where id = $1", [account.id]);
+  const limited = await hit([RULES.loginPerName, account.username]);
+  if (limited) fail(tooMany(limited));
+  if (!row || !verifyPassword(String(form.get("password") ?? ""), row.password_hash)) fail("That password isn't right.");
+  const cancelled = await cancelForDeletion(account.id);
+  if (!cancelled.ok) fail(cancelled.error);
+  await deleteAccount(account.id);
+  await endSession();
+  redirect("/goodbye");
 }

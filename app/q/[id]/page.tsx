@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { revealAction, visibilityAction } from "@/app/actions";
+import { notFound, redirect } from "next/navigation";
+import { reportAction, revealAction, visibilityAction } from "@/app/actions";
 import { Chart } from "@/components/Chart";
 import { ErrorBanner, Header } from "@/components/Header";
 import { QuestionCard } from "@/components/QuestionCard";
@@ -8,18 +8,26 @@ import { detailLevel, present, type DetailLevel } from "@/lib/access";
 import { getAccount } from "@/lib/auth";
 import { trendChart, visibilityChart } from "@/lib/charts";
 import { query } from "@/lib/db";
-import { getQuestion } from "@/lib/questions";
+import { REPORT_REASONS } from "@/lib/moderation";
+import { getQuestion, mergedInto } from "@/lib/questions";
 import { questionStats, type QuestionStats } from "@/lib/stats";
 import { hasRevealed, myVotes } from "@/lib/votes";
 
-type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string; voted?: string }> };
+type Props = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string; voted?: string; held?: string; reported?: string }>;
+};
 
 export default async function QuestionPage({ params, searchParams }: Props) {
-  const [{ id }, { error, voted }] = await Promise.all([params, searchParams]);
+  const [{ id }, { error, voted, held, reported }] = await Promise.all([params, searchParams]);
   const questionId = Number(id);
   if (!Number.isInteger(questionId) || questionId <= 0) notFound();
   const question = await getQuestion(questionId);
-  if (!question) notFound();
+  if (!question) {
+    const original = await mergedInto(questionId);
+    if (original) redirect(`/q/${original}`);
+    notFound();
+  }
 
   const account = await getAccount();
   const [stats, mine, revealed] = await Promise.all([
@@ -43,6 +51,13 @@ export default async function QuestionPage({ params, searchParams }: Props) {
       <Header />
       <main className="wrap wrap-narrow">
         <ErrorBanner message={error} />
+        {held && question.status === "review" && (
+          <p className="notice" role="status">
+            Your question is saved. A moderator checks questions that may name a private person or cause harm before
+            they go live; this usually takes less than a day.
+          </p>
+        )}
+        {reported && <p className="notice" role="status">Thanks. A moderator will look at it.</p>}
         <div className="feed feed-detail">
           <QuestionCard
             question={question}
@@ -84,6 +99,27 @@ export default async function QuestionPage({ params, searchParams }: Props) {
         )}
 
         {shown.split && shown.hasVotes && <Details stats={stats} level={level} signedIn={Boolean(account)} back={back} />}
+
+        {account && question.status === "active" && !reported && (
+          <details className="report">
+            <summary>Report this question</summary>
+            <form action={reportAction} className="form">
+              <input type="hidden" name="questionId" value={questionId} />
+              <input type="hidden" name="back" value={back} />
+              <fieldset>
+                <legend>What&apos;s wrong with it?</legend>
+                {REPORT_REASONS.map((r) => (
+                  <label key={r.value} className="check"><input type="radio" name="reason" value={r.value} required /> {r.label}</label>
+                ))}
+              </fieldset>
+              <label>
+                Anything a moderator should know <span className="field-note">(optional)</span>
+                <input name="note" maxLength={500} placeholder="For a repeat, the number of the original question" />
+              </label>
+              <button className="btn">Send report</button>
+            </form>
+          </details>
+        )}
       </main>
     </>
   );
@@ -115,7 +151,7 @@ function Details({ stats, level, signedIn, back }: { stats: QuestionStats; level
           </ul>
           <p className="note">
             {signedIn
-              ? "Included with membership, $5 a month."
+              ? <><Link href="/membership">Join for $5 a month</Link> to see all of it.</>
               : <><Link href={`/signup?next=${encodeURIComponent(back)}`}>Create an account</Link> and vote to see how firmly people hold this. The rest comes with membership, $5 a month.</>}
           </p>
         </section>

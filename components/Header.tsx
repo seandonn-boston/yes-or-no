@@ -23,7 +23,8 @@ export async function Header({ q = "", view, back }: Props) {
             {view && back && <ViewSwitcher current={view} back={back} />}
             {account ? (
               <form action={logoutAction} className="who">
-                <span>{account.username}</span>
+                {account.role !== "user" && <Link href="/mod">Review</Link>}
+                <Link href="/settings" className="who-name">{account.username}</Link>
                 <button className="link">Sign out</button>
               </form>
             ) : (

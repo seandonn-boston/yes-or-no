@@ -1,3 +1,5 @@
+import { hit, RULES, tooMany } from "@/lib/rate-limit";
+import { ipFromRequest } from "@/lib/request";
 import { countAccess, detailLevel, estimate, isApiKey, shapeStats } from "@/lib/access";
 import { getAccount } from "@/lib/auth";
 import { getQuestion } from "@/lib/questions";
@@ -15,6 +17,11 @@ import { myVotes } from "@/lib/votes";
 //   Bearer <key>)                 as_of=<ISO time>         the vote as it stood at that moment
 //                                 active_since=<ISO time>  only accounts active since then
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  // Keyed callers are metered separately; everyone else shares a per-IP allowance.
+  if (!isApiKey(request.headers.get("authorization"))) {
+    const limited = await hit([RULES.statsPerIp, ipFromRequest(request)]);
+    if (limited) return Response.json({ error: tooMany(limited) }, { status: 429 });
+  }
   const { id } = await params;
   const questionId = Number(id);
   if (!Number.isInteger(questionId) || questionId <= 0) {

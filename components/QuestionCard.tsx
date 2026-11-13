@@ -74,7 +74,10 @@ export function QuestionCard({
         </form>
       )}
 
-      {closed && <p className="q-hint">Archived. This question no longer takes new votes.</p>}
+      {question.status === "archived" && <p className="q-hint">Archived. This question no longer takes new votes.</p>}
+      {question.status === "review" && (
+        <p className="q-hint">A moderator is reviewing this question. It takes votes again once approved.</p>
+      )}
       {!signedIn && (
         <p className="q-join"><Link href={`/signup?next=${encodeURIComponent(back)}`}>Create an account</Link> to vote.</p>
       )}

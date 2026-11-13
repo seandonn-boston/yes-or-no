@@ -7,12 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:migrate": "tsx --env-file=.env.local db/migrate.ts",
+    "db:migrate": "tsx --env-file-if-exists=.env.local db/migrate.ts",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --env-file=.env.local --test tests/*.test.ts",
-    "db:seed:questions": "tsx --env-file=.env.local db/seed-questions.ts",
-    "db:seed:demo": "tsx --env-file=.env.local db/seed.ts",
-    "ai:answers": "tsx --env-file=.env.local db/ai-answers.ts"
+    "test": "tsx --env-file-if-exists=.env.local --test tests/*.test.ts",
+    "db:seed:questions": "tsx --env-file-if-exists=.env.local db/seed-questions.ts",
+    "db:seed:demo": "tsx --env-file-if-exists=.env.local db/seed.ts",
+    "ai:answers": "tsx --env-file-if-exists=.env.local db/ai-answers.ts",
+    "admin:role": "tsx --env-file-if-exists=.env.local db/set-role.ts",
+    "db:migrate:deploy": "tsx db/migrate.ts",
+    "vercel-build": "npm run db:migrate:deploy && next build"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",
@@ -20,7 +23,8 @@
     "next": "16.4.6",
     "pg": "^8.23.1",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "stripe": "^23.1.0"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -31,5 +35,8 @@
     "eslint-config-next": "16.4.6",
     "tsx": "^4.23.15",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

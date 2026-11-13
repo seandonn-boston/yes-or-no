@@ -6,6 +6,10 @@ import { pool, query } from "../lib/db";
 import type { Account } from "../lib/auth";
 import { countAccess, detailLevel, estimate, present, shapeStats } from "../lib/access";
 import { decodeCursor, feedPage, topPage } from "../lib/feed";
+import { deleteAccount, exportData } from "../lib/account";
+import { decide, report, REPORT_THRESHOLD, screenQuestion } from "../lib/moderation";
+import { hit } from "../lib/rate-limit";
+import { resendCode, startSignup, verifySignup } from "../lib/signup";
 import { ask, booleanProblem, normalize, search, tidy } from "../lib/questions";
 import { questionStats } from "../lib/stats";
 import { castVote, deleteVote, reveal, setVisibility } from "../lib/votes";
@@ -21,7 +25,7 @@ async function makeAccount(name: string, tier: "free" | "paid"): Promise<Account
      values ($1, $2, 'x', now(), $3) returning id`,
     [`${tag}_${name}`, `${tag}_${name}`, tier],
   );
-  return { id: row.id, username: `${tag}_${name}`, tier, verified: false };
+  return { id: row.id, username: `${tag}_${name}`, tier, verified: false, role: "user" };
 }
 
 async function makeQuestion(text: string): Promise<number> {
@@ -293,4 +297,128 @@ test("feeds page through the catalog without repeats or gaps", async () => {
   assert.equal(math.rows.length, 24);
   assert.ok(math.rows.every((r) => r.category === "math"));
   assert.equal(decodeCursor("not-a-cursor"), null);
+});
+
+test("signup needs the texted code before an account exists", async () => {
+  process.env.SMS_DEV_CODE = "246810";
+  const username = `${tag}_new`.slice(0, 20);
+  const phone = `617${String(Date.now()).slice(-7)}`;
+  const base = { username, phone, password: "correct horse", adult: true, consent: true, next: "/", ip: `ip-${tag}` };
+
+  assert.equal((await startSignup({ ...base, consent: false })).ok, false);
+  assert.equal((await startSignup({ ...base, username: "deleted_x" })).ok, false);
+  const started = await startSignup(base);
+  assert.ok(started.ok);
+  if (!started.ok) return;
+  const before = await query("select 1 from accounts where username = $1", [username]);
+  assert.equal(before.length, 0);
+
+  const wrong = await verifySignup(started.token, "000000");
+  assert.equal(wrong.ok, false);
+  assert.match(!wrong.ok ? wrong.error : "", /4 tries left/);
+  const resend = await resendCode(started.token, base.ip);
+  assert.equal(resend.ok, false); // too soon
+  const right = await verifySignup(started.token, "246 810");
+  assert.ok(right.ok);
+  const [account] = await query<{ phone_verified_at: Date | null }>("select phone_verified_at from accounts where username = $1", [username]);
+  assert.ok(account.phone_verified_at);
+  const left = await query("select 1 from pending_signups where username = $1", [username]);
+  assert.equal(left.length, 0);
+  // The same phone can't start another account.
+  const again = await startSignup({ ...base, username: `${tag}_2`.slice(0, 20) });
+  assert.match(!again.ok ? again.error : "", /already has an account/);
+});
+
+test("wrong codes run out", async () => {
+  const started = await startSignup({
+    username: `${tag}_x`.slice(0, 20), phone: `508${String(Date.now()).slice(-7)}`, password: "correct horse",
+    adult: true, consent: true, next: "/", ip: `ip2-${tag}`,
+  });
+  assert.ok(started.ok);
+  if (!started.ok) return;
+  for (let i = 0; i < 5; i++) await verifySignup(started.token, "111111");
+  const last = await verifySignup(started.token, process.env.SMS_DEV_CODE ?? "");
+  assert.equal(last.ok, false);
+  assert.equal(!last.ok && last.restart, true);
+});
+
+test("rate limits stop at the limit", async () => {
+  const rule = { name: `t-${tag}`, limit: 3, windowSeconds: 60 };
+  const results = [];
+  for (let i = 0; i < 5; i++) results.push(await hit([rule, "someone"]));
+  assert.deepEqual(results.map((r) => r === null), [true, true, true, false, false]);
+  assert.equal(await hit([rule, "someone else"]), null);
+});
+
+test("new questions are screened", async () => {
+  delete process.env.ANTHROPIC_API_KEY;
+  assert.ok((await screenQuestion("Is jane@example.com a scammer?", [])).reject);
+  assert.ok((await screenQuestion("Did 617 555 0100 call you last night?", [])).reject);
+  assert.ok((await screenQuestion("Does @someone_here lie a lot?", [])).reject);
+  const privateName = await screenQuestion("Is Brenda Kowalczyk a bad neighbor?", []);
+  assert.match(privateName.hold ?? "", /Brenda Kowalczyk/);
+  // A name the catalog already uses is treated as public.
+  const publicName = await screenQuestion("Did Barack Obama like basketball?", []);
+  assert.equal(publicName.hold, undefined);
+  assert.equal((await screenQuestion("Is cereal better than toast?", [])).hold, undefined);
+});
+
+test("reports take a question out of feeds; moderators decide", async () => {
+  const id = await makeQuestion(`Is the ${tag} reported question fine`);
+  const reporters = await Promise.all(Array.from({ length: REPORT_THRESHOLD }, (_, i) => makeAccount(`r${i}`, "free")));
+  for (const r of reporters.slice(0, -1)) await report(r.id, id, "spam", "");
+  const mid = await query<{ status: string }>("select status from questions where id = $1", [id]);
+  assert.equal(mid[0].status, "active");
+  await report(reporters.at(-1)!.id, id, "private_person", "names my coworker");
+  const held = await query<{ status: string }>("select status from questions where id = $1", [id]);
+  assert.equal(held[0].status, "review");
+
+  const mod = await makeAccount("mod", "free");
+  assert.equal(await decide(mod.id, id, { action: "approve" }), null);
+  const [after] = await query<{ status: string; open: number }>(
+    "select status, (select count(*)::int from reports where question_id = $1 and resolved_at is null) as open from questions where id = $1",
+    [id],
+  );
+  assert.deepEqual(after, { status: "active", open: 0 });
+
+  const copy = await makeQuestion(`Is the ${tag} reported question fine at all`);
+  assert.ok(await decide(mod.id, copy, { action: "duplicate", of: copy }));
+  assert.equal(await decide(mod.id, copy, { action: "duplicate", of: id }), null);
+  const [merged] = await query<{ status: string; duplicate_of: number }>("select status, duplicate_of from questions where id = $1", [copy]);
+  assert.deepEqual(merged, { status: "removed", duplicate_of: id });
+  const log = await query("select 1 from moderation_log where question_id = any($1::int[])", [[id, copy]]);
+  assert.equal(log.length, 2);
+});
+
+test("deleting an account withdraws votes and keeps history without identity", async () => {
+  const id = await makeQuestion(`Will the ${tag} deletion keep history`);
+  const leaver = await makeAccount("leaver", "free");
+  const stayer = await makeAccount("stayer", "free");
+  await castVote(leaver, id, "true", true, "direct");
+  await castVote(stayer, id, "false", false, "direct");
+  await query("update vote_events set created_at = now() - interval '2 days' where question_id = $1", [id]);
+  await report(leaver.id, id, "other", "");
+
+  const exported = await exportData(leaver.id);
+  assert.equal(exported.currentVotes.length, 1);
+  assert.equal(exported.voteHistory.length, 1);
+  assert.equal(JSON.stringify(exported).includes("phone_hash"), false);
+
+  await deleteAccount(leaver.id);
+  const gone = await query("select 1 from accounts where id = $1", [leaver.id]);
+  assert.equal(gone.length, 0);
+  const now = await questionStats(id);
+  assert.deepEqual(now.tally, { true: 0, false: 1, unsure: 0, total: 1 });
+  // Two days ago the vote was there, and it still is in the history.
+  const then = await questionStats(id, { asOf: new Date(Date.now() - 86_400_000) });
+  assert.deepEqual(then.tally, { true: 1, false: 1, unsure: 0, total: 2 });
+  const [standIn] = await query<{ username: string; phone_hash: string; password_hash: string; deleted_at: Date | null }>(
+    `select a.username, a.phone_hash, a.password_hash, a.deleted_at from vote_events e join accounts a on a.id = e.account_id
+      where e.question_id = $1 and e.value = 'true'`,
+    [id],
+  );
+  assert.match(standIn.username, /^deleted_/);
+  assert.equal(standIn.password_hash, "!");
+  assert.ok(standIn.deleted_at);
+  await query("delete from accounts where username = $1", [standIn.username]);
 });

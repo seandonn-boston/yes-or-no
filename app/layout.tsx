@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/archivo/wdth.css";
 import "./globals.css";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Belief Map",
@@ -12,7 +13,10 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, them
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
