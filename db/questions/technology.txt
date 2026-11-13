@@ -1,0 +1,70 @@
+FT Did Tim Berners-Lee invent the World Wide Web?
+FF Are the internet and the World Wide Web the same thing?
+FT Is Linux an open-source operating system kernel?
+FT Is Python a programming language?
+O- Is HTML a programming language?
+FT Does a byte consist of eight bits?
+FT Is binary a base-2 number system?
+FT Is hexadecimal a base-16 number system?
+FT Does RAM lose its contents when power is removed?
+FT Does HTTPS encrypt data between a browser and a website?
+FT Is Bitcoin based on a blockchain?
+FT Was the first iPhone released by Apple?
+FT Did Ada Lovelace write what is often called the first computer program?
+FT Did Alan Turing help break the Enigma cipher?
+FT Is a transistor a basic building block of modern computer chips?
+FT Is Wi-Fi a wireless networking technology?
+FF Does Wi-Fi stand for wireless fidelity as an official technical term?
+FT Is GPS based on signals from satellites?
+FT Is JavaScript a different language from Java?
+FT Is SQL used to query relational databases?
+FT Does a QR code store data in two dimensions?
+FT Can a solid-state drive read data faster than a typical hard disk drive?
+FT Is the QWERTY layout named after the first six letters on its top row?
+FT Was email in use before the World Wide Web?
+FF Was Google the first web search engine?
+FT Is Moore's law an observation about the number of transistors on a chip?
+FT Is machine learning a branch of artificial intelligence?
+FT Is a GPU well suited to training neural networks?
+FT Is two-factor authentication more secure than a password alone?
+FF Does private browsing mode hide your activity from your internet provider?
+FF Do more megapixels always mean a better camera?
+FF Does closing background apps on a phone always save battery?
+FT Can lithium-ion batteries degrade faster at high temperatures?
+FT Is USB-C a reversible connector?
+FT Is open-source software free to inspect and modify?
+O- Is AI a threat to humanity's survival?
+O- Will AI do more good than harm?
+O- Should AI systems be allowed to make medical diagnoses without a doctor?
+O- Should AI-generated images be labeled by law?
+O- Should AI companies pay creators whose work trained their models?
+O- Is AI-generated art real art?
+O- Should autonomous weapons be banned?
+O- Should there be a pause on developing more powerful AI?
+O- Is it wrong to be rude to an AI assistant?
+O- Could an AI deserve rights?
+O- Should self-driving cars prioritize passengers over pedestrians?
+O- Is remote work more productive than office work?
+O- Are smartphones making people less intelligent?
+O- Is social media addictive by design?
+O- Should children learn to code in primary school?
+O- Is nuclear fusion the future of energy?
+O- Are electric cars better for the environment than gasoline cars?
+O- Is cryptocurrency mostly a speculative bubble?
+O- Is the metaverse a dead idea?
+O- Are tabs better than spaces for indenting code?
+O- Is dark mode easier on the eyes?
+O- Is Android better than iOS?
+O- Is a Mac better than a Windows PC?
+O- Is vim better than emacs?
+O- Are video calls worse than meeting in person?
+O- Is open-source software more secure than proprietary software?
+O- Should big technology companies be broken up?
+O- Should people have a legal right to repair their own devices?
+O- Should there be a right to be forgotten online?
+O- Is it acceptable to use an ad blocker?
+O- Are passwords a worse security method than biometrics?
+O- Is technology making us lonelier?
+O- Should voting be possible online?
+O- Is nuclear waste a solved problem?
+O- Should robots that replace workers be taxed?

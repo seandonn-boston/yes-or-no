@@ -1,0 +1,78 @@
+O- Is a hot dog a sandwich?
+O- Does pineapple belong on pizza?
+O- Is cereal a soup?
+O- Is a taco a sandwich?
+O- Is a burrito a wrap?
+O- Is a Pop-Tart a ravioli?
+O- Is deep-dish pizza really pizza?
+O- Is New York pizza better than Chicago pizza?
+O- Is ketchup acceptable on a hot dog?
+O- Is ketchup acceptable on steak?
+O- Should steak ever be cooked well done?
+O- Is cilantro delicious?
+O- Is licorice good?
+O- Is candy corn good?
+O- Are raisins acceptable in cookies?
+O- Is white chocolate really chocolate?
+O- Is dark chocolate better than milk chocolate?
+O- Is crunchy peanut butter better than smooth?
+O- Is Coke better than Pepsi?
+O- Is tea better than coffee?
+O- Is iced coffee acceptable in winter?
+O- Should milk go in before the tea?
+O- Should cereal be poured before the milk?
+O- Is breakfast for dinner a good idea?
+O- Is brunch overrated?
+O- Is sushi better than pizza?
+O- Is ramen better than pho?
+O- Is a lobster roll better served warm with butter than cold with mayonnaise?
+O- Is New England clam chowder better than Manhattan clam chowder?
+O- Is mayonnaise a good condiment?
+O- Is ranch dressing acceptable on pizza?
+O- Are boneless wings just chicken nuggets?
+O- Is thin crust better than thick crust?
+O- Is the middle brownie better than the corner piece?
+O- Is cake better than pie?
+O- Is pumpkin pie better than apple pie?
+O- Is vanilla better than chocolate ice cream?
+O- Is a cheeseburger better than a plain hamburger?
+O- Are french fries better than onion rings?
+O- Is cold pizza a good breakfast?
+O- Is it acceptable to put ice in wine?
+O- Is expensive wine noticeably better than cheap wine?
+O- Is tap water as good as bottled water?
+O- Is sparkling water better than still water?
+O- Is oat milk better than dairy milk in coffee?
+O- Is spicy food more enjoyable than mild food?
+O- Is air-frying better than deep-frying?
+O- Is cooking at home always cheaper than eating out?
+O- Is tipping 20 percent the right standard at restaurants?
+O- Is it rude to send food back at a restaurant?
+O- Is a well-stocked spice rack more important than expensive pans?
+O- Is a rice cooker worth owning?
+O- Is avocado toast overpriced?
+O- Is sourdough better than regular bread?
+O- Is a bagel better toasted?
+O- Is American cheese real cheese?
+O- Is a vegetarian burger a real burger?
+O- Is breakfast cereal a dessert?
+O- Is fruit an acceptable dessert?
+O- Is it wrong to eat pizza with a knife and fork?
+FT Is a peanut a legume rather than a true nut?
+FT Is honey able to keep for years without spoiling?
+FT Is saffron one of the most expensive spices by weight?
+FT Is sushi traditionally made with vinegared rice?
+FT Is tofu made from soybeans?
+FT Is champagne named after a region of France?
+FT Is espresso made by forcing hot water through finely ground coffee?
+FT Is gluten a protein found in wheat?
+FT Is chocolate made from cacao beans?
+FT Is wasabi related to horseradish?
+FT Are bananas a good source of potassium?
+FT Is an avocado a fruit?
+FT Is rhubarb often treated as a fruit in cooking although it is a vegetable?
+FF Is a peanut a true nut in botanical terms?
+FF Does searing meat seal in its juices?
+FF Does alcohol fully cook out of every dish?
+FF Is white chocolate made with cocoa solids?
+FF Is a cashew apple the same thing as an ordinary apple?

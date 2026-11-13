@@ -1,0 +1,77 @@
+FT Did The Beatles form in Liverpool?
+FT Was Elvis Presley known as the King of Rock and Roll?
+FT Did Michael Jackson release the album Thriller?
+FT Is the Mona Lisa displayed in the Louvre?
+FT Is the Statue of Liberty a gift from France?
+FT Is the Eiffel Tower in Paris?
+FT Was the Eiffel Tower built for a world's fair?
+FT Is the Taj Mahal in India?
+FT Is the Colosseum in Rome?
+FT Is Hollywood in Los Angeles?
+FT Was Walt Disney's first full-length animated feature Snow White and the Seven Dwarfs?
+FT Is Sherlock Holmes a fictional detective?
+FT Is Hamlet a tragedy?
+FT Is a haiku a form of Japanese poetry?
+FT Does a standard piano have 88 keys?
+FT Does a standard guitar have six strings?
+FT Does a violin have four strings?
+FT Is jazz a genre that originated in the United States?
+FT Is Bollywood the nickname of the Hindi-language film industry?
+FT Is anime a style of animation from Japan?
+FT Is the Oscar the informal name of the Academy Award statuette?
+FT Is Darth Vader a character in Star Wars?
+FT Is Hogwarts a fictional school?
+FT Is Middle-earth the setting of The Lord of the Rings?
+FT Is Pikachu a Pokémon?
+FT Is Godzilla a monster that first appeared in Japanese film?
+FT Is Studio Ghibli a Japanese animation studio?
+FT Was Mozart a child prodigy?
+FT Was Beethoven deaf when he finished his Ninth Symphony?
+FT Did Vincent van Gogh cut off part of his own ear?
+FT Is the Sistine Chapel in Vatican City?
+FT Is Broadway a center of theater in New York City?
+FT Is origami the art of paper folding?
+FT Is flamenco associated with Spain?
+FT Is the tango associated with Argentina?
+FF Is Frankenstein the name of the monster in Mary Shelley's novel?
+FF Is the Mona Lisa painted on canvas?
+FF Did Mozart compose the Moonlight Sonata?
+FF Is the Statue of Liberty in Boston?
+FF Does a standard piano have 100 keys?
+O- Are The Beatles the greatest band of all time?
+O- Is hip-hop the most influential genre of the last 50 years?
+O- Is vinyl a better way to listen to music than streaming?
+O- Is modern pop music worse than it used to be?
+O- Is classical music superior to popular music?
+O- Is the book usually better than the movie?
+O- Is The Godfather the greatest film ever made?
+O- Is Star Wars better than Star Trek?
+O- Is The Empire Strikes Back the best Star Wars film?
+O- Is Die Hard a Christmas movie?
+O- Are superhero movies ruining cinema?
+O- Are remakes and sequels a sign of creative decline?
+O- Is animation a medium only for children?
+O- Is subtitled anime better than dubbed?
+O- Is Spirited Away the best Studio Ghibli film?
+O- Is Shakespeare overrated?
+O- Is poetry still relevant?
+O- Is rap a form of poetry?
+O- Is a video game a form of art?
+O- Is photography as much an art as painting?
+O- Is graffiti art?
+O- Is modern art mostly a scam?
+O- Is it acceptable to separate the art from the artist?
+O- Is binge-watching a worse way to enjoy a series?
+O- Are spoilers really that bad?
+O- Is reality television harmful to society?
+O- Is Pokémon the greatest media franchise ever?
+O- Is the original Godzilla better than its remakes?
+O- Is it fine to talk during a movie at home?
+O- Should museums be free to enter?
+O- Is a live album better than a studio album?
+O- Is the guitar solo dead?
+O- Is opera inaccessible to most people?
+O- Is the novel a dying form?
+O- Is fan fiction real literature?
+O- Should classic books with offensive language be edited for modern readers?
+O- Is Christmas music acceptable before Thanksgiving?

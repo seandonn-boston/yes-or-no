@@ -13,6 +13,7 @@
   --false: #dd6f17;
   --unsure: #6b7480;
   --header-h: 116px;
+  --cats-h: 45px;
   color-scheme: dark;
 }
 
@@ -99,6 +100,15 @@ input[type="checkbox"] { accent-color: var(--ink); width: 16px; height: 16px; ma
 .views button[aria-pressed="true"] { background: var(--ink); color: #000000; }
 .views button:focus-visible { outline-offset: -3px; }
 
+/* ---------- Subjects ---------- */
+
+.cats { height: var(--cats-h); border-bottom: 1px solid var(--line); }
+.cats-in { max-width: 1180px; height: 100%; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.cats-in::-webkit-scrollbar { display: none; }
+.cats a { flex: none; padding: 5px 11px; border-radius: 999px; color: var(--dim); font-size: 0.9rem; text-decoration: none; white-space: nowrap; }
+.cats a:hover { color: var(--ink); }
+.cats a[aria-current="page"] { background: var(--ink); color: #000000; font-weight: 600; }
+
 /* ---------- Page widths ---------- */
 
 .wrap { margin: 0 auto; padding: 0 16px 72px; }
@@ -146,7 +156,11 @@ input[type="checkbox"] { accent-color: var(--ink); width: 16px; height: 16px; ma
 
 /* ---------- Layout 1: compact single column ---------- */
 
-.feed-compact .q { display: grid; gap: 10px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.feed-compact .q {
+  display: grid; gap: 10px; padding: 16px 0; border-bottom: 1px solid var(--line);
+  /* Skip layout and paint for rows far off screen; long lists stay cheap to scroll. */
+  content-visibility: auto; contain-intrinsic-size: auto 170px;
+}
 .feed-compact .q-text { font-size: 1.08rem; }
 .feed-compact .fig-pct { font-size: 1.4rem; }
 .feed-compact .split-bar { height: 6px; margin: 6px 0; }
@@ -156,20 +170,24 @@ input[type="checkbox"] { accent-color: var(--ink); width: 16px; height: 16px; ma
 
 /* ---------- Layout 2: masonry tiles ---------- */
 
-.feed-tiles { columns: 2; column-gap: 10px; margin-top: 10px; }
-@media (min-width: 640px) { .feed-tiles { columns: 3; column-gap: 12px; } }
-@media (min-width: 960px) { .feed-tiles { columns: 4; } }
-.feed-tiles .q { break-inside: avoid; display: grid; gap: 12px; margin: 0 0 10px; padding: 14px; border: 1px solid var(--line); border-radius: 8px; }
+/* Fixed columns that cards are dealt into in order, so loading more never moves a card. */
+.feed-tiles { display: flex; align-items: flex-start; gap: 10px; margin-top: 12px; }
+.feed-tiles .col { flex: 1 1 0; min-width: 0; display: grid; gap: 10px; }
+.feed-tiles .q { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 8px; }
 .feed-tiles .q-text { font-size: 1.3rem; font-weight: 750; font-stretch: 68%; line-height: 1.1; }
 .feed-tiles .fig-pct { font-size: 1.55rem; }
 .feed-tiles .fig-label em { display: none; }
 .feed-tiles .vote .btn { padding: 0 6px; }
 .feed-tiles .vote-side .btn { font-size: 0.82rem; }
-@media (min-width: 640px) { .feed-tiles .fig-label em { display: inline; } .feed-tiles .q { padding: 16px; margin-bottom: 12px; } }
+@media (min-width: 640px) {
+  .feed-tiles, .feed-tiles .col { gap: 12px; }
+  .feed-tiles .q { padding: 16px; }
+  .feed-tiles .fig-label em { display: inline; }
+}
 
 /* ---------- Layout 3: one question per screen ---------- */
 
-.feed-swipe { height: calc(100dvh - var(--header-h)); overflow-y: auto; scroll-snap-type: y mandatory; overscroll-behavior: contain; scrollbar-width: none; }
+.feed-swipe { height: calc(100dvh - var(--header-h) - var(--cats-h)); overflow-y: auto; scroll-snap-type: y mandatory; overscroll-behavior: contain; scrollbar-width: none; }
 .feed-swipe::-webkit-scrollbar { display: none; }
 .feed-swipe .q { min-height: 100%; scroll-snap-align: start; scroll-snap-stop: always; display: flex; flex-direction: column; gap: 24px; padding: 20px 0 28px; }
 .feed-swipe .q-text { margin-top: auto; font-size: clamp(2.1rem, 9.5vw, 3.3rem); font-weight: 800; font-stretch: 64%; line-height: 1.02; }
@@ -184,6 +202,11 @@ input[type="checkbox"] { accent-color: var(--ink); width: 16px; height: 16px; ma
 .feed-swipe .btn.answer { height: 68px; font-size: 1.4rem; font-stretch: 70%; }
 .feed-swipe .vote-side .btn { height: 46px; font-size: 0.95rem; }
 
+.feed-end { display: grid; place-items: center; min-height: 72px; padding: 16px 0; color: var(--dim); font-size: 0.88rem; }
+.feed-swipe .feed-end { min-height: 40%; scroll-snap-align: end; }
+.q-error { margin: 0; color: #ffb3a8; font-size: 0.86rem; }
+.btn:disabled { opacity: 0.55; cursor: progress; }
+
 /* ---------- A single question's page ---------- */
 
 .feed-detail .q { display: grid; gap: 18px; padding: 26px 0 16px; }
@@ -194,6 +217,7 @@ input[type="checkbox"] { accent-color: var(--ink); width: 16px; height: 16px; ma
 .feed-detail .split-foot { font-size: 0.88rem; }
 .feed-detail .btn.answer { height: 54px; font-size: 1.1rem; }
 
+.ai-note { margin: 0; padding: 12px 0; border-top: 1px solid var(--line); font-size: 0.88rem; color: var(--dim); }
 .aside-form { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; padding: 12px 0; border-top: 1px solid var(--line); font-size: 0.9rem; color: var(--dim); }
 
 .block { margin-top: 18px; padding: 24px 0 4px; border-top: 1px solid var(--line); }

@@ -1,0 +1,44 @@
+FT Is English a Germanic language?
+FT Is Spanish a Romance language?
+FT Is Mandarin Chinese the language with the most native speakers?
+FT Does the English alphabet have 26 letters?
+FT Is Latin the ancestor of French, Spanish and Italian?
+FT Is Esperanto a constructed language?
+FT Is Sanskrit an ancient language of India?
+FT Is Arabic written from right to left?
+FT Is Hebrew written from right to left?
+FT Does Japanese use more than one writing system?
+FT Is Braille a writing system read by touch?
+FT Is American Sign Language a full language with its own grammar?
+FT Is a palindrome a word that reads the same forwards and backwards?
+FT Is an anagram a rearrangement of letters to form a new word?
+FT Is E the most common letter in English text?
+FT Is Portuguese the main language of Brazil?
+FT Is French an official language of Canada?
+FT Is Swahili widely spoken in East Africa?
+FT Does Switzerland have four national languages?
+FT Is Icelandic closely related to Old Norse?
+FF Is Portuguese the main language of Argentina?
+FF Is Chinese written with an alphabet?
+FF Is English the most spoken native language in the world?
+FF Is Dutch the main language of Denmark?
+FF Is Finnish closely related to Swedish?
+O- Is the Oxford comma necessary?
+O- Is it acceptable to end a sentence with a preposition?
+O- Is it acceptable to split an infinitive?
+O- Is literally acceptable as an intensifier?
+O- Is irregardless a real word?
+O- Is GIF pronounced with a hard G?
+O- Is data a singular noun?
+O- Is they acceptable as a singular pronoun?
+O- Should English spelling be reformed?
+O- Is emoji a language?
+O- Is texting ruining grammar?
+O- Is British English more correct than American English?
+O- Is learning Latin useful today?
+O- Is Mandarin harder to learn than Arabic for English speakers?
+O- Should everyone learn a second language in school?
+O- Will machine translation make language learning unnecessary?
+O- Is a dialect just a language without an army?
+O- Is profanity a sign of a limited vocabulary?
+O- Is y a vowel?

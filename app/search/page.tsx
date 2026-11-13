@@ -6,7 +6,6 @@ import { present } from "@/lib/access";
 import { getAccount } from "@/lib/auth";
 import { booleanProblem, normalize, search, tidy } from "@/lib/questions";
 import { tallies } from "@/lib/stats";
-import { getView } from "@/lib/view";
 import { myVotes } from "@/lib/votes";
 
 type Props = { searchParams: Promise<{ q?: string; error?: string }> };
@@ -14,8 +13,8 @@ type Props = { searchParams: Promise<{ q?: string; error?: string }> };
 export default async function SearchPage({ searchParams }: Props) {
   const { q = "", error } = await searchParams;
   const text = q.trim().slice(0, 200);
-  const [account, preferred] = await Promise.all([getAccount(), getView()]);
-  const view = preferred === "swipe" ? "compact" : preferred; // results are a list to scan, not to page through
+  const account = await getAccount();
+  const view = "compact"; // a short list of matches to scan
   const matches = text ? await search(text) : [];
   const ids = matches.map((m) => m.id);
   const [tally, mine] = await Promise.all([tallies(ids), account ? myVotes(account.id, ids) : new Map()]);

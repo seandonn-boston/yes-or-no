@@ -1,0 +1,66 @@
+FT Does the U.S. Constitution begin with the words We the People?
+FT Does the United States Congress have two chambers?
+FT Does the U.S. Senate have 100 members?
+FT Does the U.S. House of Representatives have 435 voting members?
+FT Does each U.S. state have two senators?
+FT Does a U.S. president serve a four-year term?
+FT Does a U.S. senator serve a six-year term?
+FT Does a member of the U.S. House serve a two-year term?
+FT Does the U.S. Supreme Court have nine seats?
+FT Do U.S. Supreme Court justices serve for life unless they resign, retire or are removed?
+FT Is the Bill of Rights the first ten amendments to the U.S. Constitution?
+FT Does the First Amendment protect freedom of speech?
+FT Does the Twenty-second Amendment limit a president to two elected terms?
+FT Does the Nineteenth Amendment guarantee women the right to vote?
+FT Does the U.S. Constitution have 27 amendments?
+FT Is the vice president the president of the U.S. Senate?
+FT Does it take 270 electoral votes to win a U.S. presidential election?
+FT Can a U.S. president veto a bill passed by Congress?
+FT Can Congress override a presidential veto with a two-thirds vote in both chambers?
+FT Must a U.S. president be at least 35 years old?
+FF Must a U.S. senator be at least 35 years old?
+FF Is the right to vote at 18 written into the original U.S. Constitution of 1787?
+FT Is the United Kingdom a constitutional monarchy?
+FT Is Canada a constitutional monarchy?
+FT Is Japan a constitutional monarchy?
+FF Is France a monarchy?
+FT Does the United Nations Security Council have five permanent members?
+FT Is the United Kingdom's parliament located at Westminster?
+FT Is the European Parliament directly elected?
+FF Is Switzerland a member of the European Union?
+FF Is Norway a member of the European Union?
+FT Is Germany a federal republic?
+FT Is India the world's most populous democracy?
+FT Is Australia a federation of states and territories?
+FT Did the United Kingdom leave the European Union?
+FT Was George Washington unanimously chosen by the Electoral College?
+FT Was Franklin D. Roosevelt elected president four times?
+FT Was John F. Kennedy the first Catholic president of the United States?
+FT Was Barack Obama the first Black president of the United States?
+FT Did Richard Nixon resign from office?
+FT Was Abraham Lincoln a Republican?
+FT Was Thomas Jefferson the main author of the Declaration of Independence?
+FT Did the United States purchase Alaska from Russia?
+FT Is Washington, D.C. a federal district rather than a state?
+FF Is Puerto Rico a U.S. state?
+FT Are people born in Puerto Rico U.S. citizens?
+O- Is the United States a democracy in practice?
+O- Is compromise in politics a sign of weakness?
+O- Are most politicians honest?
+O- Does your single vote make a difference?
+O- Is it a civic duty to vote?
+O- Is direct democracy better than representative democracy?
+O- Should heads of state have an age limit?
+O- Is the filibuster good for the U.S. Senate?
+O- Should the U.S. Supreme Court be expanded?
+O- Is proportional representation fairer than winner-take-all elections?
+O- Should ranked-choice voting be used in national elections?
+O- Are political parties necessary for democracy?
+O- Is a monarchy compatible with a modern democracy?
+O- Should the United Kingdom abolish its monarchy?
+O- Is the United Nations effective?
+O- Is NATO still necessary?
+O- Should the U.S. president be elected by national popular vote?
+O- Is political polarization worse now than 30 years ago?
+O- Should politicians be banned from trading individual stocks?
+O- Should national referendums be used for major decisions?

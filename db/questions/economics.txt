@@ -1,0 +1,50 @@
+FT Is inflation a general rise in prices over time?
+FT Is GDP a measure of the value of goods and services a country produces?
+FT Does the Federal Reserve set interest rate policy in the United States?
+FT Is a recession commonly described as two consecutive quarters of falling GDP?
+FT Does the law of demand say that higher prices usually reduce the quantity demanded?
+FT Is a monopoly a market with a single seller?
+FT Did the euro replace national currencies in many European countries?
+FT Is the New York Stock Exchange located on Wall Street?
+FT Is a bond a form of debt?
+FT Does compound interest earn interest on previously earned interest?
+FT Was the Great Depression in the 1930s?
+FT Did the global financial crisis begin in 2007 to 2008?
+FF Does printing more money always make a country richer?
+FF Is the stock market the same thing as the economy?
+FT Is a tariff a tax on imported goods?
+FT Is a stock a share of ownership in a company?
+FT Did Adam Smith describe the invisible hand?
+FT Did John Maynard Keynes argue for government spending during downturns?
+FT Is deflation a general fall in prices?
+FT Is opportunity cost the value of the next best alternative given up?
+O- Is a higher minimum wage good for low-paid workers overall?
+O- Do tax cuts for the wealthy benefit everyone in the end?
+O- Is free trade good for most people?
+O- Are tariffs an effective way to protect jobs?
+O- Is inequality the biggest economic problem of our time?
+O- Is economic growth compatible with protecting the environment?
+O- Is government debt a serious threat to the economy?
+O- Should central banks be independent of elected governments?
+O- Is a strong currency always good for a country?
+O- Is homeownership a better investment than renting and investing the difference?
+O- Is it better to pay off debt before investing?
+O- Is a college degree a good financial investment?
+O- Are index funds a better choice than picking stocks for most people?
+O- Is gold a good hedge against inflation?
+O- Is the gig economy good for workers?
+O- Are unions good for the economy?
+O- Should the retirement age be raised?
+O- Should there be a maximum wage?
+O- Should companies be required to share profits with employees?
+O- Should essential services like water be publicly owned?
+O- Is rent control effective at keeping housing affordable?
+O- Does immigration lower wages for existing workers?
+O- Is automation creating more jobs than it destroys?
+O- Is the four-day work week economically viable?
+O- Is advertising good for society?
+O- Is consumer debt out of control?
+O- Is it possible to time the stock market?
+O- Should banks that are too big to fail be broken up?
+O- Is a cashless society a good thing?
+O- Is money the best measure of success?

@@ -1,0 +1,65 @@
+FT Was Julius Caesar assassinated in Rome?
+FF Was Julius Caesar a Roman emperor?
+FT Was Augustus the first Roman emperor?
+FT Did the Roman Empire use Latin as an official language?
+FT Were the pyramids of Giza built in ancient Egypt?
+FF Were the pyramids of Giza built by the Aztecs?
+FT Was Cleopatra a ruler of Egypt?
+FT Did Cleopatra live closer in time to the Moon landing than to the building of the Great Pyramid?
+FT Did the ancient Olympic Games originate in Greece?
+FT Was Alexander the Great tutored by Aristotle?
+FT Did Genghis Khan found the Mongol Empire?
+FT Did the Black Death kill a large share of Europe's population in the 14th century?
+FT Did Joan of Arc fight for France?
+FT Did Johannes Gutenberg introduce movable-type printing to Europe?
+FT Did Ferdinand Magellan's expedition complete the first circumnavigation of the Earth?
+FF Did Ferdinand Magellan personally complete the first voyage around the world?
+FT Did the Industrial Revolution begin in Britain?
+FT Was Napoleon Bonaparte Emperor of the French?
+FF Was Napoleon unusually short for his time?
+FT Did Queen Victoria reign for more than 60 years?
+FT Was Abraham Lincoln president during the American Civil War?
+FT Did the Thirteenth Amendment abolish slavery in the United States?
+FT Was the Titanic on its first voyage when it sank?
+FT Did the assassination of Archduke Franz Ferdinand help trigger World War I?
+FT Was Winston Churchill prime minister of Britain during World War II?
+FT Did the D-Day landings take place in Normandy?
+FT Was the atomic bomb first used in war against Japan?
+FT Did the Cold War involve the United States and the Soviet Union?
+FT Was Mahatma Gandhi a leader of India's independence movement?
+FT Did Rosa Parks refuse to give up her bus seat in Montgomery, Alabama?
+FT Did Martin Luther King Jr. deliver his I Have a Dream speech in Washington, D.C.?
+FT Was Nelson Mandela the first Black president of South Africa?
+FT Was Margaret Thatcher the first woman to be prime minister of the United Kingdom?
+FT Did the Vikings reach North America before Columbus?
+FF Did people in medieval Europe generally believe the Earth was flat?
+FF Did Vikings wear horned helmets in battle?
+FF Did Marie Antoinette say let them eat cake, according to reliable evidence?
+FT Was the Library of Alexandria in Egypt?
+FT Was Machu Picchu built by the Inca?
+FT Was the Great Wall of China built over many centuries?
+FT Did the Ottoman Empire last into the 20th century?
+FT Was Istanbul once called Constantinople?
+FT Was the Berlin Wall in Germany?
+FT Did the Soviet Union launch the first human into space?
+FT Was George Washington a general before he was president?
+O- Was the American Revolution justified?
+O- Was dropping atomic bombs on Japan justified?
+O- Was the fall of the Roman Empire a disaster for civilization?
+O- Was the Industrial Revolution good for ordinary people at the time?
+O- Was Napoleon more of a reformer than a tyrant?
+O- Was Christopher Columbus a villain?
+O- Was the British Empire on balance a force for harm?
+O- Was the Cold War avoidable?
+O- Was World War I inevitable?
+O- Was the Treaty of Versailles a main cause of World War II?
+O- Was Alexander the Great truly great?
+O- Was the printing press the most important invention in history?
+O- Was the agricultural revolution a mistake for human happiness?
+O- Is history written by the victors?
+O- Is the present the best time in history to be alive?
+O- Do great individuals shape history more than broad social forces?
+O- Does history repeat itself?
+O- Was Lee Harvey Oswald the only gunman in the Kennedy assassination?
+O- Did Shakespeare write all the plays attributed to him?
+O- Was Richard III responsible for the deaths of the princes in the Tower?

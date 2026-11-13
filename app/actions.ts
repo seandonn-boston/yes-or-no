@@ -6,10 +6,11 @@ import { query } from "@/lib/db";
 import {
   endSession, getAccount, hashPassword, hashPhone, normalizePhone, startSession, verifyPassword,
 } from "@/lib/auth";
+import { toCard, type CardItem } from "@/lib/cards";
 import { ask } from "@/lib/questions";
 import { VIEW_COOKIE, VIEWS, type View } from "@/lib/view";
 import {
-  castVote, deleteVote, reveal, setVisibility, skip, SOURCES, VOTE_VALUES, type Source, type VoteValue,
+  castVote, deleteVote, myVotes, reveal, setVisibility, skip, SOURCES, VOTE_VALUES, type Source, type VoteValue,
 } from "@/lib/votes";
 
 const str = (form: FormData, key: string) => String(form.get(key) ?? "").trim();
@@ -166,4 +167,50 @@ export async function setViewAction(form: FormData) {
     (await cookies()).set(VIEW_COOKIE, view, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
   }
   redirect(withoutError(backPath(form)));
+}
+
+// ---- In-place versions, called from the feed so a vote never reloads the page ----
+
+export type InlineResult = { ok: true; card: CardItem } | { ok: false; error: string };
+
+async function cardFor(questionId: number, account: { id: number; tier: "free" | "paid" }, slot: Source): Promise<InlineResult> {
+  const rows = await query<{ id: number; text: string; status: string; category: string; t: number; f: number; u: number }>(
+    `select id, text, status, category, true_count as t, false_count as f, unsure_count as u
+       from questions where id = $1 and status <> 'removed'`,
+    [questionId],
+  );
+  if (!rows[0]) return { ok: false, error: "That question wasn't found." };
+  const mine = await myVotes(account.id, [questionId]);
+  return { ok: true, card: toCard({ ...rows[0], slot }, account, mine.get(questionId) ?? null) };
+}
+
+type InlineInput = { questionId: number; source: string };
+const cleanSource = (s: string): Source => (SOURCES.includes(s as Source) ? (s as Source) : "direct");
+const validId = (id: number) => Number.isInteger(id) && id > 0;
+
+export async function voteInline(input: InlineInput & { value: string; isPrivate: boolean }): Promise<InlineResult> {
+  const account = await getAccount();
+  if (!account) return { ok: false, error: "Sign in to vote." };
+  if (!validId(input.questionId) || !VOTE_VALUES.includes(input.value as VoteValue)) {
+    return { ok: false, error: "That vote wasn't valid." };
+  }
+  const slot = cleanSource(input.source);
+  const result = await castVote(account, input.questionId, input.value as VoteValue, input.isPrivate, slot);
+  return result.ok ? cardFor(input.questionId, account, slot) : result;
+}
+
+export async function deleteVoteInline(input: InlineInput): Promise<InlineResult> {
+  const account = await getAccount();
+  if (!account) return { ok: false, error: "Sign in to vote." };
+  if (!validId(input.questionId)) return { ok: false, error: "That question wasn't found." };
+  const slot = cleanSource(input.source);
+  const result = await deleteVote(account, input.questionId, slot);
+  return result.ok ? cardFor(input.questionId, account, slot) : result;
+}
+
+export async function skipInline(input: InlineInput): Promise<{ ok: boolean }> {
+  const account = await getAccount();
+  if (!account || !validId(input.questionId)) return { ok: false };
+  await skip(account, input.questionId);
+  return { ok: true };
 }

@@ -9,19 +9,15 @@ export function percentages(t: Tally) {
   return { true: pct(t.true, t.total), false: pct(t.false, t.total), unsure: pct(t.unsure, t.total) };
 }
 
-// Fast current tallies for lists of questions, read from the votes cache.
+// Current tallies for a list of questions, read from the counters kept on each question.
 export async function tallies(questionIds: number[]): Promise<Map<number, Tally>> {
   const map = new Map<number, Tally>(questionIds.map((id) => [id, { true: 0, false: 0, unsure: 0, total: 0 }]));
   if (!questionIds.length) return map;
-  const rows = await query<{ question_id: number; t: number; f: number; u: number }>(
-    `select question_id,
-            count(*) filter (where value = 'true')::int   as t,
-            count(*) filter (where value = 'false')::int  as f,
-            count(*) filter (where value = 'unsure')::int as u
-       from votes where question_id = any($1::int[]) group by question_id`,
+  const rows = await query<{ id: number; t: number; f: number; u: number }>(
+    "select id, true_count as t, false_count as f, unsure_count as u from questions where id = any($1::int[])",
     [questionIds],
   );
-  for (const r of rows) map.set(r.question_id, { true: r.t, false: r.f, unsure: r.u, total: r.t + r.f + r.u });
+  for (const r of rows) map.set(r.id, { true: r.t, false: r.f, unsure: r.u, total: r.t + r.f + r.u });
   return map;
 }
 

@@ -1,26 +1,38 @@
 import Link from "next/link";
+import type { FormEvent } from "react";
 import { deleteVoteAction, skipAction, voteAction } from "@/app/actions";
 import type { Shown } from "@/lib/access";
-import type { Question } from "@/lib/questions";
 import type { MyVote, Source } from "@/lib/votes";
 import { Split } from "./Split";
 
 type Props = {
-  question: Question;
+  question: { id: number; text: string; status: string };
   shown: Shown;
-  myVote?: MyVote;
+  myVote?: MyVote | null;
   signedIn: boolean;
   source: Source;
   back: string;          // path to return to after an action
   linkTitle?: boolean;
   reveal?: boolean;      // animate the split in: this is the question just voted on
+  // Set by LiveCard in feeds, where votes are saved in place. Without it the forms submit
+  // normally and the page reloads, which is also what happens when scripts are off.
+  onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
+  busy?: boolean;
+  error?: string | null;
 };
 
 const sentence = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-export function QuestionCard({ question, shown, myVote, signedIn, source, back, linkTitle = true, reveal }: Props) {
+export function QuestionCard({
+  question, shown, myVote, signedIn, source, back, linkTitle = true, reveal, onSubmit, busy, error,
+}: Props) {
   const closed = question.status !== "active";
   const canVote = signedIn && !(closed && !myVote);
+  const answer = (value: "true" | "false" | "unsure", label: string, kind: string) => (
+    <button name="value" value={value} data-act={value} disabled={busy}
+      className={`btn ${kind} ${value}${myVote?.value === value ? " mine" : ""}`}
+      aria-pressed={myVote?.value === value}>{label}</button>
+  );
 
   return (
     <article className={`q${myVote ? " is-voted" : ""}`}>
@@ -37,25 +49,23 @@ export function QuestionCard({ question, shown, myVote, signedIn, source, back, 
       )}
 
       {canVote && (
-        <form action={voteAction} className="vote">
+        <form action={voteAction} onSubmit={onSubmit} className="vote">
           <input type="hidden" name="questionId" value={question.id} />
           <input type="hidden" name="source" value={source} />
           <input type="hidden" name="back" value={back} />
           <div className="vote-main">
-            <button name="value" value="true" className={`btn answer true${myVote?.value === "true" ? " mine" : ""}`}
-              aria-pressed={myVote?.value === "true"}>True</button>
-            <button name="value" value="false" className={`btn answer false${myVote?.value === "false" ? " mine" : ""}`}
-              aria-pressed={myVote?.value === "false"}>False</button>
+            {answer("true", "True", "answer")}
+            {answer("false", "False", "answer")}
           </div>
           <div className="vote-side">
-            <button name="value" value="unsure" className={`btn quiet unsure${myVote?.value === "unsure" ? " mine" : ""}`}
-              aria-pressed={myVote?.value === "unsure"}>Unsure</button>
+            {answer("unsure", "Unsure", "quiet")}
             {myVote ? (
-              <button formAction={deleteVoteAction} className="btn quiet">Delete</button>
+              <button formAction={deleteVoteAction} data-act="delete" disabled={busy} className="btn quiet">Delete</button>
             ) : (
-              <button formAction={skipAction} className="btn quiet">Skip</button>
+              <button formAction={skipAction} data-act="skip" disabled={busy} className="btn quiet">Skip</button>
             )}
           </div>
+          {error && <p className="q-error" role="alert">{error}</p>}
           {myVote ? (
             <p className="vote-note">You voted {myVote.value}, {myVote.is_private ? "privately" : "publicly"}. One change per day.</p>
           ) : (

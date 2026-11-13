@@ -3,7 +3,7 @@ import { LIMITS, TODAY_UTC } from "./limits";
 import type { Account } from "./auth";
 import { findDuplicate } from "./moderation";
 
-export type Question = { id: number; text: string; status: string; created_at: Date };
+export type Question = { id: number; text: string; status: string; category: string; created_at: Date };
 export type Match = Question & { similarity: number };
 
 // Lowercase, strip punctuation, collapse whitespace. Two questions with the same normalized
@@ -48,7 +48,7 @@ export async function search(text: string, limit = 10): Promise<Match[]> {
   const norm = normalize(text);
   if (!norm) return [];
   return query<Match>(
-    `select id, text, status, created_at, similarity(normalized, $1)::float as similarity
+    `select id, text, status, category, created_at, similarity(normalized, $1)::float as similarity
        from questions
       where status <> 'removed'
         and (normalized % $1 or normalized like '%' || $2 || '%')
@@ -60,7 +60,7 @@ export async function search(text: string, limit = 10): Promise<Match[]> {
 
 export async function getQuestion(id: number): Promise<Question | null> {
   const rows = await query<Question>(
-    "select id, text, status, created_at from questions where id = $1 and status <> 'removed'",
+    "select id, text, status, category, created_at from questions where id = $1 and status <> 'removed'",
     [id],
   );
   return rows[0] ?? null;

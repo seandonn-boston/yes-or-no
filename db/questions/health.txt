@@ -1,0 +1,65 @@
+FF Do vaccines cause autism?
+FT Do vaccines train the immune system to recognize a disease?
+FF Do humans use only ten percent of their brains?
+FF Does cracking your knuckles cause arthritis?
+FF Does going outside with wet hair cause a cold?
+FF Does sugar make children hyperactive?
+FF Does shaving make hair grow back thicker?
+FF Do you need to wait an hour after eating before swimming?
+FF Does reading in dim light permanently damage your eyes?
+FF Do humans have only five senses?
+FT Is the heart a muscle?
+FT Is skin the largest organ of the human body?
+FT Does the adult human body have 206 bones?
+FT Is the femur the longest bone in the human body?
+FT Do red blood cells carry oxygen?
+FT Is insulin produced in the pancreas?
+FT Is smoking a major cause of lung cancer?
+FT Can too much sun exposure cause skin cancer?
+FT Is type 1 diabetes an autoimmune condition?
+FT Is high blood pressure a risk factor for stroke?
+FT Does regular exercise lower the risk of heart disease?
+FT Is the common cold caused by viruses?
+FF Is influenza caused by bacteria?
+FT Can stress affect physical health?
+FT Is sleep necessary for memory consolidation?
+FT Do most adults need at least seven hours of sleep a night?
+FF Can you fully catch up on a week of lost sleep in one night?
+FT Is alcohol a depressant?
+FT Is caffeine a stimulant?
+FT Can humans survive with one kidney?
+FT Is blood type O negative considered the universal red cell donor type?
+FT Does the liver help remove toxins from the blood?
+FF Does eating carrots give you night vision?
+FT Does vitamin C deficiency cause scurvy?
+FT Does the body make vitamin D when skin is exposed to sunlight?
+FF Is it dangerous to wake a sleepwalker?
+FF Do we lose most of our body heat through the head?
+FT Is body temperature slightly different from person to person?
+FT Are fingerprints unique to each person?
+FT Do identical twins have different fingerprints?
+FT Is tooth enamel the hardest substance in the human body?
+FT Do babies have more bones than adults?
+FF Does chewing gum stay in your stomach for seven years?
+FT Can humans get rabies from an infected animal's bite?
+FT Was smallpox eradicated worldwide?
+FF Has polio been eradicated worldwide?
+O- Is breakfast the most important meal of the day?
+O- Is a vegan diet healthier than one that includes meat?
+O- Is intermittent fasting an effective way to lose weight?
+O- Is moderate drinking better for you than not drinking at all?
+O- Is sitting all day as bad for you as smoking?
+O- Are eight glasses of water a day necessary?
+O- Is running bad for your knees?
+O- Is organic food healthier than conventional food?
+O- Are artificial sweeteners worse for you than sugar?
+O- Is it healthy to take a daily multivitamin?
+O- Is therapy more effective than medication for mild depression?
+O- Is screen time harmful to young children?
+O- Is obesity mainly a matter of personal responsibility?
+O- Should adults get a full medical check-up every year?
+O- Is chiropractic care effective for back pain?
+O- Does acupuncture work better than a placebo?
+O- Is homeopathy effective?
+O- Is mental illness overdiagnosed?
+O- Is cold exposure good for your health?

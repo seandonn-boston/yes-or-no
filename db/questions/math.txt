@@ -1,0 +1,47 @@
+FT Is zero an even number?
+FF Is one a prime number?
+FT Is two the only even prime number?
+FT Is pi an irrational number?
+FF Is pi exactly equal to 22 divided by 7?
+FT Is the square root of 2 irrational?
+FT Does 0.999 repeating equal 1?
+FT Is a negative number times a negative number positive?
+FT Is any nonzero number raised to the power of zero equal to 1?
+FF Is division by zero defined in ordinary arithmetic?
+FT Do the interior angles of a triangle in a flat plane add up to 180 degrees?
+FT Does a hexagon have six sides?
+FT Does a cube have twelve edges?
+FT Does a circle have 360 degrees?
+FT Is the Pythagorean theorem about right-angled triangles?
+FT Is a square a special kind of rectangle?
+FF Is every rectangle a square?
+FT Are there infinitely many prime numbers?
+FT Are there more real numbers than whole numbers?
+FT Is the sum of the first 100 positive whole numbers 5,050?
+FT Is the number e approximately 2.718?
+FT Is the golden ratio approximately 1.618?
+FT Is a googol 10 to the power of 100?
+FT Is the Fibonacci sequence built by adding the two previous numbers?
+FT Was Fermat's Last Theorem proved in the 1990s?
+FT Is the four color theorem proven?
+FF Is the Riemann hypothesis proven?
+FF Is the Goldbach conjecture proven?
+FT Is a million a thousand thousands?
+FT Is a billion a thousand millions in modern English usage?
+FT Is the probability of a fair coin landing heads one half?
+FF Is a coin more likely to land tails after five heads in a row?
+FT Is it better to switch doors in the Monty Hall problem?
+FT Is the mean of 2, 4 and 9 equal to 5?
+FT Is the median of 1, 3 and 100 equal to 3?
+FT Is a prime number divisible only by 1 and itself?
+FT Is the imaginary unit i defined as the square root of minus one?
+O- Is mathematics a science?
+O- Is zero a natural number?
+O- Is math the universal language?
+O- Is calculus harder than statistics?
+O- Should statistics be taught before calculus in schools?
+O- Is memorizing multiplication tables still necessary?
+O- Is a proof checked only by computer a real proof?
+O- Is tau a better circle constant than pi?
+O- Is base 12 better than base 10 for everyday counting?
+O- Is infinity a number?

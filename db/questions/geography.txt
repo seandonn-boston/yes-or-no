@@ -1,0 +1,66 @@
+FT Is the Nile in Africa?
+FT Is the Amazon the largest river in the world by volume of water?
+FT Is the Sahara the largest hot desert on Earth?
+FT Is Antarctica a desert?
+FT Is Antarctica the coldest continent?
+FT Is Asia the largest continent by area?
+FT Is Australia both a country and a continent?
+FT Is Russia the largest country by area?
+FF Is Canada the largest country by area?
+FT Is Vatican City the smallest country in the world by area?
+FT Is Greenland the largest island in the world that is not a continent?
+FF Is Greenland an independent country?
+FT Is Lake Baikal the deepest lake in the world?
+FT Is the Dead Sea saltier than the ocean?
+FT Is the Mariana Trench the deepest known part of the ocean?
+FT Is Mount Kilimanjaro in Tanzania?
+FT Is the Great Barrier Reef off the coast of Australia?
+FT Is the Grand Canyon in Arizona?
+FT Is Alaska the largest U.S. state by area?
+FF Is Texas the largest U.S. state by area?
+FT Is California the most populous U.S. state?
+FT Is Rhode Island the smallest U.S. state by area?
+FT Does the Mississippi River flow into the Gulf of Mexico?
+FT Is Hawaii made up of volcanic islands?
+FT Do Alaska and Hawaii lie outside the contiguous United States?
+FT Is Africa home to more countries than any other continent?
+FT Is the equator at zero degrees latitude?
+FT Does the prime meridian pass through Greenwich, England?
+FT Is Iceland located on the Mid-Atlantic Ridge?
+FT Is Japan an island country?
+FT Is Italy shaped roughly like a boot?
+FT Does Chile stretch along the Pacific coast of South America?
+FT Is Istanbul located on two continents?
+FT Is the Strait of Gibraltar between Spain and Morocco?
+FT Does the Panama Canal connect the Atlantic and Pacific oceans?
+FT Does the Suez Canal connect the Mediterranean Sea and the Red Sea?
+FT Is Mount Fuji in Japan?
+FT Is Niagara Falls on the border between Canada and the United States?
+FT Is Victoria Falls on the Zambezi River?
+FT Is the Danube the river that flows through the most countries?
+FT Is the Caspian Sea the largest inland body of water on Earth?
+FF Is the Atlantic the largest ocean on Earth?
+FF Is Mount Everest in the Alps?
+FF Is Africa a country?
+FF Is Iceland mostly covered in ice while Greenland is mostly green?
+FF Is London on the River Seine?
+FT Is Paris on the River Seine?
+FT Is Venice built on a lagoon?
+FT Is Singapore a city-state?
+FT Is Monaco smaller than Central Park in New York?
+FT Does Lesotho lie entirely inside South Africa?
+FT Is Reykjavik the northernmost capital of a sovereign state?
+FT Is La Paz one of the highest capital cities in the world?
+FT Is Tokyo the center of the most populous metropolitan area in the world?
+O- Is Europe a separate continent from Asia in any meaningful sense?
+O- Should there be seven continents rather than six?
+O- Is Central America part of North America?
+O- Is the Midwest the best region of the United States to live in?
+O- Is New York the greatest city in the world?
+O- Is Boston a better sports city than New York?
+O- Is the West Coast better than the East Coast?
+O- Is it better to live in a city than in the countryside?
+O- Are mountains better than beaches?
+O- Is Florida part of the South culturally?
+O- Is Pittsburgh part of the Midwest?
+O- Is Texas part of the Southwest?

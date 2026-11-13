@@ -1,0 +1,95 @@
+FT Is the Earth round?
+FF Is the Earth flat?
+FT Does the Earth orbit the Sun?
+FT Is the Earth about 4.5 billion years old?
+FT Is water made of hydrogen and oxygen?
+FT Does light travel faster than sound?
+FF Does sound travel faster in air than in water?
+FT Is the speed of light in a vacuum about 300,000 kilometers per second?
+FT Does water boil at 100 degrees Celsius at sea level?
+FT Does water freeze at 32 degrees Fahrenheit?
+FF Does hot water freeze faster than cold water in every case?
+FT Is absolute zero equal to minus 273.15 degrees Celsius?
+FT Is DNA shaped like a double helix?
+FT Do humans share a common ancestor with chimpanzees?
+FF Did humans evolve from modern chimpanzees?
+FT Are viruses smaller than bacteria in general?
+FF Are antibiotics effective against viruses?
+FT Do plants take in carbon dioxide during photosynthesis?
+FT Is the mitochondrion often called the powerhouse of the cell?
+FT Do humans normally have 46 chromosomes?
+FF Do humans have more chromosomes than every other species?
+FT Is nitrogen the most abundant gas in Earth's atmosphere?
+FF Is oxygen the most abundant gas in Earth's atmosphere?
+FT Is diamond made of carbon?
+FT Is an atom mostly empty space?
+FT Are electrons negatively charged?
+FF Are neutrons positively charged?
+FT Is gold a chemical element?
+FF Is steel a chemical element?
+FT Is helium lighter than air?
+FT Does lightning heat the air to a temperature hotter than the surface of the Sun?
+FF Does lightning never strike the same place twice?
+FT Is glass made mostly from sand?
+FT Do magnets have both a north and a south pole?
+FT Does a feather fall as fast as a hammer in a vacuum?
+FF Do heavier objects fall faster than lighter ones in a vacuum?
+FT Is energy conserved in a closed system?
+FT Does the Moon cause most of the ocean tides on Earth?
+FF Is the Great Wall of China visible to the naked eye from the Moon?
+FT Are the continents slowly moving?
+FT Was there once a supercontinent called Pangaea?
+FT Did non-avian dinosaurs go extinct about 66 million years ago?
+FF Did humans and non-avian dinosaurs live at the same time?
+FT Are birds descended from dinosaurs?
+FT Is the Pacific the largest ocean on Earth?
+FT Is Mount Everest the highest mountain above sea level?
+FT Is the blue whale the largest animal known to have lived?
+FF Is a tomato a vegetable in botanical terms?
+FT Is a tomato a fruit in botanical terms?
+FT Is a banana a berry in botanical terms?
+FF Is a strawberry a true berry in botanical terms?
+FT Are mushrooms fungi rather than plants?
+FT Is human activity the main cause of recent global warming?
+FT Is the ozone layer in the stratosphere?
+FF Are the seasons caused by the Earth's distance from the Sun?
+FT Are the seasons caused by the tilt of the Earth's axis?
+FT Is sound unable to travel through a vacuum?
+FT Is a light-year a unit of distance?
+FF Is a light-year a unit of time?
+FT Do all objects with mass attract each other through gravity?
+FT Is the pH of pure water 7 at room temperature?
+FT Is rust a form of iron oxide?
+FT Is table salt a compound of sodium and chlorine?
+FT Is mercury a liquid at room temperature?
+FF Is glass a slow-flowing liquid at room temperature?
+FT Can sound waves shatter glass?
+FT Is the human body mostly water by weight?
+FF Is blood in human veins blue before it meets oxygen?
+FT Did Marie Curie win Nobel Prizes in two different sciences?
+FT Did Isaac Newton formulate the laws of motion?
+FT Did Charles Darwin propose natural selection as a mechanism of evolution?
+FT Did Gregor Mendel study inheritance in pea plants?
+FT Did Dmitri Mendeleev publish an early periodic table?
+FT Did Alexander Fleming discover penicillin?
+FF Did Thomas Edison invent the telephone?
+FT Did Alexander Graham Bell patent the telephone?
+FT Did Galileo observe the moons of Jupiter with a telescope?
+FF Did Albert Einstein win the Nobel Prize for the theory of relativity?
+FT Did Albert Einstein win the Nobel Prize for explaining the photoelectric effect?
+O- Is string theory a scientific theory?
+O- Is the many-worlds interpretation of quantum mechanics correct?
+O- Is dark matter made of particles not yet discovered?
+O- Is the universe infinite?
+O- Was there anything before the Big Bang?
+O- Is there a multiverse?
+O- Is a theory of everything achievable?
+O- Is time fundamental rather than emergent?
+O- Is faster-than-light travel possible?
+O- Is nuclear power safer than fossil fuels?
+O- Should scientists try to bring back extinct species?
+O- Should geoengineering be used to cool the planet?
+O- Should gain-of-function research on dangerous viruses be banned?
+O- Is psychology a real science?
+O- Is economics a real science?
+O- Is the replication crisis a sign that most published research is wrong?

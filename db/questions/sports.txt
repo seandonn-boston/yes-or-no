@@ -1,0 +1,85 @@
+FT Is a touchdown worth six points in American football?
+FT Is a field goal worth three points in American football?
+FT Does a regulation NBA game have four quarters?
+FT Is a basketball hoop ten feet high in the NBA?
+FT Does a baseball game normally have nine innings?
+FT Does a soccer team field eleven players at a time?
+FT Does a standard soccer match last 90 minutes plus stoppage time?
+FT Is a marathon 26.2 miles long?
+FT Does an ice hockey game have three periods?
+FT Is a hat-trick three goals by one player in a game?
+FT Does a tennis match use the score love for zero?
+FT Is Wimbledon played on grass?
+FT Is the French Open played on clay?
+FT Are there four Grand Slam tournaments in tennis each year?
+FT Does a golf course normally have 18 holes?
+FT Is par the expected number of strokes for a hole in golf?
+FT Does a regulation NFL game have four quarters of 15 minutes?
+FT Are the Summer Olympic Games normally held every four years?
+FT Do the Olympic rings have five colors plus a white background?
+FT Is the Tour de France a cycling race?
+FT Is the Stanley Cup awarded in ice hockey?
+FT Is the Super Bowl the championship game of the NFL?
+FT Is the World Series the championship of Major League Baseball?
+FT Is the FIFA World Cup normally held every four years?
+FT Did Brazil win the FIFA World Cup in 2002?
+FT Did Jackie Robinson break Major League Baseball's color barrier in 1947?
+FT Did Babe Ruth play for both the Red Sox and the Yankees?
+FT Did Michael Jordan win six NBA championships with the Chicago Bulls?
+FT Did Muhammad Ali win an Olympic gold medal in boxing?
+FT Did Usain Bolt set the 100 meters world record of 9.58 seconds?
+FT Did Michael Phelps win more Olympic gold medals than any other athlete?
+FT Did Wayne Gretzky play for the Edmonton Oilers?
+FT Did the Boston Red Sox win the World Series in 2004?
+FT Did the Chicago Cubs win the World Series in 2016?
+FT Did Leicester City win the English Premier League in 2016?
+FT Is a perfect game in bowling a score of 300?
+FT Is a bullseye worth 50 points in darts?
+FT Is the Kentucky Derby a horse race?
+FT Is a regulation chess board eight squares by eight?
+FF Does a baseball team field ten players in the field at a time?
+FF Is a touchdown worth seven points before the extra point?
+FF Is a soccer goal worth two points?
+FF Is the Stanley Cup awarded in basketball?
+FF Does a regulation NBA game have two halves instead of quarters?
+O- Is Michael Jordan the greatest basketball player of all time?
+O- Is LeBron James the greatest basketball player of all time?
+O- Is Tom Brady the greatest quarterback of all time?
+O- Is Lionel Messi the greatest soccer player of all time?
+O- Is Cristiano Ronaldo a greater player than Lionel Messi?
+O- Is Serena Williams the greatest tennis player of all time?
+O- Is Novak Djokovic the greatest men's tennis player of all time?
+O- Is Wayne Gretzky the greatest hockey player of all time?
+O- Is Babe Ruth the greatest baseball player of all time?
+O- Is Muhammad Ali the greatest boxer of all time?
+O- Is Simone Biles the greatest gymnast of all time?
+O- Is Tiger Woods the greatest golfer of all time?
+O- Is Usain Bolt the greatest sprinter of all time?
+O- Is chess a sport?
+O- Is golf a sport?
+O- Is cheerleading a sport?
+O- Is competitive video gaming a sport?
+O- Is NASCAR a sport?
+O- Is baseball boring?
+O- Is soccer the best sport in the world?
+O- Is American football too dangerous for children to play?
+O- Should the designated hitter be used in all of baseball?
+O- Should video review be used for every close call?
+O- Should fighting be banned in ice hockey?
+O- Should college football have a larger playoff?
+O- Should the NBA shorten its regular season?
+O- Should the World Cup be held every two years?
+O- Should the Olympics have a permanent host city?
+O- Should performance-enhancing drugs be allowed in a separate league?
+O- Should athletes who used steroids be in the Hall of Fame?
+O- Should Pete Rose be in the Baseball Hall of Fame?
+O- Are professional athletes paid too much?
+O- Is home-field advantage real?
+O- Is the Premier League the best soccer league in the world?
+O- Is the Super Bowl halftime show better than the game?
+O- Is running a marathon good for your body?
+O- Is tanking for draft picks bad for sports?
+O- Are the New England Patriots the greatest NFL dynasty?
+O- Is the Red Sox and Yankees rivalry the best in sports?
+O- Is hockey harder to play than basketball?
+O- Is a penalty shootout a fair way to decide a final?

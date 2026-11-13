@@ -5,6 +5,7 @@ import { after, before, test } from "node:test";
 import { pool, query } from "../lib/db";
 import type { Account } from "../lib/auth";
 import { countAccess, detailLevel, estimate, present, shapeStats } from "../lib/access";
+import { decodeCursor, feedPage, topPage } from "../lib/feed";
 import { ask, booleanProblem, normalize, search, tidy } from "../lib/questions";
 import { questionStats } from "../lib/stats";
 import { castVote, deleteVote, reveal, setVisibility } from "../lib/votes";
@@ -229,4 +230,67 @@ test("question detail is tiered: visitor, voter, member, API", async () => {
   assert.deepEqual(keys("voter"), ["asOf", "pctChangedMind", "percentages", "tally"]);
   assert.deepEqual(keys("member"), ["asOf", "blindFirstVotes", "churn", "history", "pctChangedMind", "percentages", "tally", "visibility"]);
   assert.deepEqual(keys("api"), ["activeSince", "asOf", "blindFirstVotes", "churn", "history", "pctChangedMind", "percentages", "sources", "tally", "visibility"]);
+});
+
+test("vote counters on the question follow every cast, change and delete", async () => {
+  const id = await makeQuestion(`Is the ${tag} counter kept in step`);
+  const a = await makeAccount("c1", "paid"), b = await makeAccount("c2", "paid");
+  const counts = async () => (await query<{ t: number; f: number; u: number; total: number }>(
+    "select true_count as t, false_count as f, unsure_count as u, total_count as total from questions where id = $1", [id]))[0];
+  await castVote(a, id, "true", false, "direct");
+  await castVote(b, id, "false", true, "direct");
+  assert.deepEqual(await counts(), { t: 1, f: 1, u: 0, total: 2 });
+  await castVote(a, id, "unsure", false, "direct");
+  assert.deepEqual(await counts(), { t: 0, f: 1, u: 1, total: 2 });
+  await deleteVote(b, id, "direct");
+  assert.deepEqual(await counts(), { t: 0, f: 0, u: 1, total: 1 });
+  // Deleting an account removes its votes, and the counters follow.
+  await query("delete from accounts where id = $1", [a.id]);
+  assert.deepEqual(await counts(), { t: 0, f: 0, u: 0, total: 0 });
+});
+
+test("feeds page through the catalog without repeats or gaps", async () => {
+  const [{ n: active }] = await query<{ n: number }>("select count(*)::int as n from questions where status = 'active'");
+
+  // Signed out: every active question exactly once, most-voted first.
+  const seen = new Set<number>();
+  let cursor: string | null = null, pages = 0, lastTotal = Infinity;
+  do {
+    const page = await topPage(decodeCursor(cursor), null, 400);
+    for (const row of page.rows) {
+      assert.ok(!seen.has(row.id), `repeat ${row.id}`);
+      seen.add(row.id);
+      const total = row.t + row.f + row.u;
+      assert.ok(total <= lastTotal);
+      lastTotal = total;
+    }
+    cursor = page.next;
+    pages++;
+  } while (cursor && pages < 50);
+  assert.equal(seen.size, active);
+
+  // Signed in: only unanswered questions, no repeats, and it reaches the end.
+  const reader = await makeAccount("reader", "paid");
+  const answered = [...seen][0];
+  await castVote(reader, answered, "true", false, "direct");
+  const mine = new Set<number>();
+  cursor = null; pages = 0;
+  do {
+    const page = await feedPage(reader.id, decodeCursor(cursor), null, 300);
+    for (const row of page.rows) {
+      assert.ok(!mine.has(row.id), `repeat ${row.id}`);
+      mine.add(row.id);
+    }
+    cursor = page.next;
+    pages++;
+  } while (cursor && pages < 60);
+  assert.ok(!mine.has(answered));
+  assert.equal(mine.size, active - 1);
+  await deleteVote(reader, answered, "direct");
+
+  // A subject filter only returns that subject.
+  const math = await feedPage(reader.id, null, "math", 24);
+  assert.equal(math.rows.length, 24);
+  assert.ok(math.rows.every((r) => r.category === "math"));
+  assert.equal(decodeCursor("not-a-cursor"), null);
 });

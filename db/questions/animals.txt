@@ -1,0 +1,50 @@
+FT Is the cheetah the fastest land animal?
+FT Is the peregrine falcon the fastest bird in a dive?
+FT Is the giraffe the tallest living land animal?
+FT Is the African elephant the largest living land animal?
+FT Do octopuses have three hearts?
+FT Do bees communicate with a waggle dance?
+FT Do bats use echolocation?
+FT Do sharks have skeletons made of cartilage?
+FT Are koalas marsupials?
+FT Can a chameleon move its eyes independently?
+FT Do male seahorses carry the young?
+FT Do emperor penguins live in Antarctica?
+FT Do polar bears live in the Arctic?
+FT Is a group of lions called a pride?
+FT Is a group of crows called a murder?
+FT Do snakes smell with their tongues?
+FT Are owls able to turn their heads about 270 degrees?
+FT Do hummingbirds fly backwards?
+FT Do camels store fat in their humps?
+FT Is a spider's silk stronger than steel by weight?
+O- Do elephants mourn their dead?
+FT Are dolphins able to recognize themselves in a mirror?
+FT Do monarch butterflies migrate thousands of miles?
+FT Is the platypus one of the few mammals that lay eggs?
+FT Are honeybees important pollinators of crops?
+FF Do camels store water in their humps?
+FF Do ostriches bury their heads in the sand?
+FF Are bats blind?
+FF Do goldfish have a memory of only three seconds?
+FF Do bulls get angry at the color red?
+FF Do penguins live at the North Pole in the wild?
+FF Do polar bears hunt penguins in the wild?
+FF Is a koala a bear?
+FF Do lemmings commit mass suicide by jumping off cliffs?
+FF Does a mother bird reject a chick touched by humans as a rule?
+O- Are dogs more loyal than cats?
+O- Are octopuses conscious?
+O- Do fish feel pain?
+O- Do insects feel pain?
+O- Are animals capable of love?
+O- Should great apes have legal personhood?
+O- Should people keep exotic animals as pets?
+O- Is it ethical to keep a bird in a cage?
+O- Is it ethical to breed dogs for appearance?
+O- Should declawing cats be illegal?
+O- Should invasive species be culled to protect native wildlife?
+O- Would a gorilla beat a grizzly bear in a fight?
+O- Are sharks unfairly feared?
+O- Are pigeons underrated?
+O- Is a pig smarter than a dog?

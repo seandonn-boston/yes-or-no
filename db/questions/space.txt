@@ -1,0 +1,61 @@
+FT Is the Sun a star?
+FF Is the Sun a planet?
+FT Is the Moon a natural satellite of Earth?
+FT Did humans walk on the Moon?
+FF Were the Apollo Moon landings faked?
+FT Is Jupiter the largest planet in the Solar System?
+FT Is Mercury the smallest planet in the Solar System?
+FT Is Venus the hottest planet in the Solar System?
+FF Is Mercury the hottest planet in the Solar System?
+FT Does Saturn have rings?
+FT Does Jupiter have rings?
+FT Is Mars known as the Red Planet?
+FT Is Pluto classified as a dwarf planet?
+FF Is Pluto classified as one of the eight planets?
+FT Is the Milky Way a spiral galaxy?
+FT Is the universe expanding?
+FT Is the universe about 13.8 billion years old?
+FT Does light from the Sun take about eight minutes to reach Earth?
+FF Does light from the Sun reach Earth instantly?
+FT Is a day on Venus longer than a year on Venus?
+FT Does the Moon always show nearly the same face to Earth?
+FF Is the far side of the Moon always dark?
+FT Is there water ice on the Moon?
+FT Is there water ice on Mars?
+FT Was Yuri Gagarin the first human in space?
+FT Was Neil Armstrong the first person to walk on the Moon?
+FF Was Buzz Aldrin the first person to walk on the Moon?
+FT Was Valentina Tereshkova the first woman in space?
+FT Was Sputnik 1 the first artificial satellite?
+FT Is the International Space Station in low Earth orbit?
+FT Can a black hole's gravity trap light?
+FT Have astronomers captured an image of a black hole's shadow?
+FT Have gravitational waves been directly detected?
+FT Do stars produce energy by nuclear fusion?
+FF Is the Sun burning in the way a fire burns?
+FT Will the Sun eventually become a red giant?
+FF Will the Sun end its life as a black hole?
+FT Is Proxima Centauri the nearest known star to the Sun?
+FT Have planets been discovered orbiting other stars?
+FT Is Olympus Mons on Mars taller than Mount Everest?
+FT Does Titan, a moon of Saturn, have a thick atmosphere?
+FT Is Ganymede the largest moon in the Solar System?
+FF Is Earth's Moon the largest moon in the Solar System?
+FT Has Voyager 1 left the heliosphere?
+FT Is a comet's tail pushed away from the Sun?
+FF Is there sound in the vacuum of space?
+FT Did an asteroid impact contribute to the extinction of the dinosaurs?
+FT Does Uranus rotate on its side?
+FT Is Halley's Comet visible from Earth roughly every 76 years?
+O- Is there intelligent life elsewhere in the universe?
+O- Is there microbial life elsewhere in the Solar System?
+O- Has Earth been visited by extraterrestrials?
+O- Should Pluto be a planet again?
+O- Should humans colonize Mars?
+O- Is space exploration worth the money?
+O- Should private companies be allowed to own land on the Moon?
+O- Should we send messages into space to announce our presence?
+O- Is the search for extraterrestrial intelligence a good use of funding?
+O- Should space be kept free of weapons?
+O- Is returning to the Moon a better goal than going to Mars?
+O- Should space tourism be taxed for its emissions?

@@ -1,5 +1,6 @@
-// Demo data: a few hundred fake accounts voting, and sometimes changing their minds, over the
-// last two weeks. Safe to run more than once; it does nothing if seed accounts already exist.
+// DEVELOPMENT ONLY. Fake accounts casting fake votes, so the charts and stats have something
+// to draw while building. It refuses to run in production: a live site's votes must all be
+// real people's. Safe to run more than once; it does nothing if seed accounts already exist.
 import { createHash } from "crypto";
 import { Pool } from "pg";
 
@@ -46,6 +47,9 @@ const normalize = (t: string) =>
   t.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/\s+/g, " ").trim();
 
 async function main() {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("db/seed.ts creates fake accounts and votes and must never run against a production database.");
+  }
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   const existing = await pool.query("select 1 from accounts where username like 'seed\\_%' limit 1");
   if (existing.rowCount) {
@@ -72,7 +76,7 @@ async function main() {
     for (const seed of QUESTIONS) {
       const q = await client.query<{ id: number }>(
         `insert into questions (text, normalized, created_at) values ($1, $2, now() - interval '${DAYS} days')
-         on conflict (normalized) do update set text = excluded.text returning id`,
+         on conflict (normalized) do update set normalized = excluded.normalized returning id`,
         [seed.text, normalize(seed.text)],
       );
       const questionId = q.rows[0].id;

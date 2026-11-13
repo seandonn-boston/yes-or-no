@@ -13,7 +13,8 @@ createdb beliefmap
 cp .env.example .env.local      # then edit DATABASE_URL and PHONE_PEPPER
 npm install
 npm run db:migrate
-npm run db:seed                 # optional: 300 demo accounts voting over two weeks
+npm run db:seed:questions       # the catalog: about 3,400 questions across 19 subjects
+npm run db:seed:demo            # development only: 300 fake accounts voting over two weeks
 npm run dev
 ```
 
@@ -30,6 +31,28 @@ npm run dev
 - **Stats.** Split, share who changed once / more than once / recently, public versus private, blind first votes, arrival routes, and a 14-day trend, with charts drawn in Highcharts. How much of it a viewer gets depends on their tier (below). Breakdowns for groups smaller than `MIN_GROUP_SIZE` are withheld.
 - **Three layouts.** Compact single column, masonry tiles, or one question per screen with swipe-to-next. The switcher is in the header and the choice is kept in a cookie.
 - **Black theme.** True black background for OLED and QLED screens. Colour is used only for answers: blue for true, orange for false, grey for unsure.
+
+## The question catalog
+
+`db/questions/` holds about 3,400 questions in 19 subjects. Around 1,300 are written by hand (opinions, forecasts and one-off facts, one file per subject); the rest are families of facts generated from tables in `generate.ts` (primes, capitals, elements, presidents, dates, authors), with false versions mixed in so the wording never gives the answer away. Every question is tagged fact, forecast or opinion, and facts carry their settled answer for internal use; voters never see it.
+
+`npm run db:seed:questions` loads or refreshes the catalog and can be rerun after edits.
+
+## Feeds and lazy loading
+
+The first page of 12 questions arrives with the HTML. `components/FeedList.tsx` fetches the next page from `GET /api/feed?cursor=...&c=<subject>` as the reader nears the end, in all three layouts:
+
+- **Compact:** rows far off screen skip layout and paint.
+- **Tiles:** cards are dealt into fixed columns in order, so loading more never moves a card.
+- **One at a time:** the next page is fetched a few panels ahead.
+
+Votes in a feed are saved in place (`components/LiveCard.tsx`), so the list keeps its position and the result appears on the card you voted on. Without scripts the same forms submit normally.
+
+On the server, each page is a keyset query on an index, never an offset: most-voted for visitors; for signed-in readers a mix of contested, newly asked and lottery streams that don't overlap (`lib/feed.ts`). Vote counters live on each question and are kept by a database trigger.
+
+## AI answers
+
+`npm run ai:answers` asks a model (default `claude-haiku-5-5`, needs `ANTHROPIC_API_KEY`) to answer the catalog and stores the result in `ai_answers`. These are not votes. They are shown on a question's page with an "answered" label once the split is visible, and never enter a tally, percentage or statistic. The site's numbers are people only.
 
 ## Who sees how many votes
 
@@ -81,11 +104,13 @@ Both filters need an API key. Keys are listed in the `API_KEYS` environment vari
 ## Layout
 
 ```
-app/            pages, server actions (app/actions.ts), the stats API route
-components/     question card, split bar, chart wrapper, layout switcher, header
+app/            pages, server actions (app/actions.ts), the feed and stats API routes
+components/     question card, live card and feed list (lazy loading), split bar, chart wrapper,
+                layout switcher, header
 lib/            auth, questions (search, ask), votes (rules), stats, charts, access (count gating),
                 feed, view (layout preference), limits, moderation
-db/             SQL migrations, migration runner, seed data
+db/             SQL migrations and runner, the question catalog and its loader, the AI answers
+                script, development-only demo votes
 tests/          rule tests
 ```
 
@@ -98,7 +123,7 @@ Highcharts is free for personal and non-commercial use and needs a paid licence 
 - SMS confirmation of the phone number (the number is taken on trust for now)
 - Model-based duplicate and question-quality check (`lib/moderation.ts` is the hook; today only exact repeats are refused)
 - Verification, attribute attestations (home state, age band), and demographic filters
-- Follows, profiles, categories and tags
+- Follows, profiles, tags, and sorting user-asked questions into subjects
 - Question families, event dates, archiving and "Did X happen?" successors
 - Payments, API key management and metering, embeds, reporting and moderator tools
 - Search cap for visitors without an account

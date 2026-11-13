@@ -7,6 +7,7 @@ import { QuestionCard } from "@/components/QuestionCard";
 import { detailLevel, present, type DetailLevel } from "@/lib/access";
 import { getAccount } from "@/lib/auth";
 import { trendChart, visibilityChart } from "@/lib/charts";
+import { query } from "@/lib/db";
 import { getQuestion } from "@/lib/questions";
 import { questionStats, type QuestionStats } from "@/lib/stats";
 import { hasRevealed, myVotes } from "@/lib/votes";
@@ -27,6 +28,10 @@ export default async function QuestionPage({ params, searchParams }: Props) {
     account ? hasRevealed(account.id, questionId) : false,
   ]);
   const myVote = mine.get(questionId);
+  const aiAnswers = await query<{ model: string; value: string }>(
+    "select model, value from ai_answers where question_id = $1 order by answered_at",
+    [questionId],
+  );
   const back = `/q/${questionId}`;
   const shown = present(stats.tally, {
     account, voted: Boolean(myVote), revealed, closed: question.status !== "active",
@@ -68,6 +73,14 @@ export default async function QuestionPage({ params, searchParams }: Props) {
             <span>Voting before you see the results keeps your answer your own.</span>
             <button className="link">Show results first</button>
           </form>
+        )}
+
+        {/* Only once the split is visible, so an AI's answer can't steer a first vote. */}
+        {shown.split && aiAnswers.length > 0 && (
+          <p className="ai-note">
+            {aiAnswers.map((a) => `${a.model} answered ${a.value}`).join("; ")}.
+            {" "}AI answers are shown for comparison and are never counted as votes.
+          </p>
         )}
 
         {shown.split && shown.hasVotes && <Details stats={stats} level={level} signedIn={Boolean(account)} back={back} />}
