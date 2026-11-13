@@ -42,6 +42,7 @@ export type QuestionStats = {
     changedOnce: number;
     changedMoreThanOnce: number;
     changedInLast7Days: number;
+    pctChangedMind: number;      // changed at least once
     pctChangedOnce: number;
     pctChangedMoreThanOnce: number;
     pctChangedInLast7Days: number;
@@ -147,6 +148,7 @@ export async function questionStats(questionId: number, opts: StatsOptions = {})
       changedOnce: churn.once,
       changedMoreThanOnce: churn.multi,
       changedInLast7Days: churn.recent,
+      pctChangedMind: pct(churn.once + churn.multi, churn.ever),
       pctChangedOnce: pct(churn.once, churn.ever),
       pctChangedMoreThanOnce: pct(churn.multi, churn.ever),
       pctChangedInLast7Days: pct(churn.recent, churn.ever),
@@ -158,15 +160,5 @@ export async function questionStats(questionId: number, opts: StatsOptions = {})
       const total = h.t + h.f + h.u;
       return { day: h.day, total, pctTrue: pct(h.t, total), pctFalse: pct(h.f, total), pctUnsure: pct(h.u, total) };
     }),
-  };
-}
-
-// What someone without an account may see: percentages, never head counts.
-export function publicView(stats: QuestionStats) {
-  return {
-    asOf: stats.asOf,
-    activeSince: stats.activeSince,
-    percentages: stats.percentages,
-    history: stats.history.map(({ day, pctTrue, pctFalse, pctUnsure }) => ({ day, pctTrue, pctFalse, pctUnsure })),
   };
 }

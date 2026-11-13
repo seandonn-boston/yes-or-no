@@ -53,16 +53,3 @@ export function visibilityChart(pub: NonNullable<GroupStat>, priv: NonNullable<G
     ],
   };
 }
-
-// How first votes arrived. One series, so no legend; the title carries the meaning.
-export function arrivalChart(sources: { label: string; votes: number }[]): Options {
-  return {
-    chart: { type: "bar", height: 44 + sources.length * 34 },
-    xAxis: { categories: sources.map((s) => s.label) },
-    yAxis: { min: 0, labels: { enabled: false }, gridLineWidth: 0 },
-    legend: { enabled: false },
-    tooltip: { pointFormat: "<b>{point.y:,.0f}</b> first votes" },
-    plotOptions: { bar: { pointWidth: 14, borderRadius: 3, dataLabels: { enabled: true, format: "{point.y:,.0f}" } } },
-    series: [{ type: "bar", name: "First votes", color: "#c3c9d3", data: sources.map((s) => s.votes) }],
-  };
-}

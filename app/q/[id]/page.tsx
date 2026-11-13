@@ -1,25 +1,17 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { revealAction, visibilityAction } from "@/app/actions";
 import { Chart } from "@/components/Chart";
 import { ErrorBanner, Header } from "@/components/Header";
 import { QuestionCard } from "@/components/QuestionCard";
-import { countAccess, present } from "@/lib/access";
+import { detailLevel, present, type DetailLevel } from "@/lib/access";
 import { getAccount } from "@/lib/auth";
-import { arrivalChart, trendChart, visibilityChart } from "@/lib/charts";
+import { trendChart, visibilityChart } from "@/lib/charts";
 import { getQuestion } from "@/lib/questions";
 import { questionStats, type QuestionStats } from "@/lib/stats";
 import { hasRevealed, myVotes } from "@/lib/votes";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string; voted?: string }> };
-
-const SOURCE_LABELS: Record<string, string> = {
-  "feed:random": "Random slot",
-  "feed:contested": "Contested slot",
-  "feed:fresh": "New questions",
-  "feed:top": "Home page",
-  search: "Search",
-  direct: "Direct link",
-};
 
 export default async function QuestionPage({ params, searchParams }: Props) {
   const [{ id }, { error, voted }] = await Promise.all([params, searchParams]);
@@ -39,7 +31,7 @@ export default async function QuestionPage({ params, searchParams }: Props) {
   const shown = present(stats.tally, {
     account, voted: Boolean(myVote), revealed, closed: question.status !== "active",
   });
-  const exact = countAccess(account, Boolean(myVote)) === "full";
+  const level = detailLevel(account, Boolean(myVote));
 
   return (
     <>
@@ -78,15 +70,47 @@ export default async function QuestionPage({ params, searchParams }: Props) {
           </form>
         )}
 
-        {shown.split && shown.hasVotes && <Details stats={stats} exact={exact} />}
+        {shown.split && shown.hasVotes && <Details stats={stats} level={level} signedIn={Boolean(account)} back={back} />}
       </main>
     </>
   );
 }
 
-function Details({ stats, exact }: { stats: QuestionStats; exact: boolean }) {
-  const { churn, visibility, blindFirstVotes, sources, history } = stats;
-  const count = (x: number) => (exact ? `${x.toLocaleString("en-US")} people` : null);
+// What the page shows grows with the viewer's level (lib/access.ts). Arrival routes and the
+// time filters are never shown here; they are API-only.
+function Details({ stats, level, signedIn, back }: { stats: QuestionStats; level: DetailLevel; signedIn: boolean; back: string }) {
+  const { churn, visibility, blindFirstVotes, history } = stats;
+
+  if (level !== "member") {
+    return (
+      <>
+        {level === "voter" && (
+          <section className="block">
+            <h2>How firmly people hold this</h2>
+            <p className="headline-stat">
+              <span className="tile-value">{churn.pctChangedMind}%</span>
+              <span>have changed their mind on this at least once</span>
+            </p>
+          </section>
+        )}
+        <section className="block locked">
+          <h2>More on this question, for members</h2>
+          <ul>
+            <li>How the split has moved over the last 14 days</li>
+            <li>How many changed once, more than once, or this week</li>
+            <li>What people say publicly against what they say privately</li>
+          </ul>
+          <p className="note">
+            {signedIn
+              ? "Included with membership, $5 a month."
+              : <><Link href={`/signup?next=${encodeURIComponent(back)}`}>Create an account</Link> and vote to see how firmly people hold this. The rest comes with membership, $5 a month.</>}
+          </p>
+        </section>
+      </>
+    );
+  }
+
+  const count = (x: number) => `${x.toLocaleString("en-US")} people`;
   const tiles = [
     { value: churn.pctChangedOnce, label: "changed their vote once", sub: count(churn.changedOnce) },
     { value: churn.pctChangedMoreThanOnce, label: "changed it more than once", sub: count(churn.changedMoreThanOnce) },
@@ -95,7 +119,6 @@ function Details({ stats, exact }: { stats: QuestionStats; exact: boolean }) {
   ];
   const days = history.filter((h) => h.total > 0);
   const first = days[0], last = days[days.length - 1];
-  const arrivals = sources.map((s) => ({ label: SOURCE_LABELS[s.source] ?? s.source, votes: s.votes }));
 
   return (
     <>
@@ -106,7 +129,7 @@ function Details({ stats, exact }: { stats: QuestionStats; exact: boolean }) {
             <li key={t.label}>
               <span className="tile-value">{t.value}%</span>
               <span className="tile-label">{t.label}</span>
-              {t.sub && <span className="tile-sub">{t.sub}</span>}
+              <span className="tile-sub">{t.sub}</span>
             </li>
           ))}
         </ul>
@@ -141,7 +164,7 @@ function Details({ stats, exact }: { stats: QuestionStats; exact: boolean }) {
             />
             <p className="note">
               {visibility.public.pctTrue}% of public votes say true, against {visibility.private.pctTrue}% of private ones
-              {exact && ` (${visibility.public.total.toLocaleString("en-US")} public, ${visibility.private.total.toLocaleString("en-US")} private)`}.
+              ({visibility.public.total.toLocaleString("en-US")} public, {visibility.private.total.toLocaleString("en-US")} private).
               A gap is the difference between what people say with and without their name on it.
             </p>
           </>
@@ -149,17 +172,6 @@ function Details({ stats, exact }: { stats: QuestionStats; exact: boolean }) {
           <p className="note">Too few public or private votes to compare yet.</p>
         )}
       </section>
-
-      {exact && arrivals.length > 0 && (
-        <section className="block">
-          <h2>How voters arrived</h2>
-          <Chart
-            options={arrivalChart(arrivals)}
-            label={arrivals.map((a) => `${a.label}: ${a.votes} first votes`).join(", ")}
-          />
-          <p className="note">A surge from direct links can mean a question is being passed around to stack the vote.</p>
-        </section>
-      )}
     </>
   );
 }

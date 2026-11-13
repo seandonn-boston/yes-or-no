@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { pool, query } from "../lib/db";
 import type { Account } from "../lib/auth";
-import { countAccess, estimate, present } from "../lib/access";
+import { countAccess, detailLevel, estimate, present, shapeStats } from "../lib/access";
 import { ask, booleanProblem, normalize, search, tidy } from "../lib/questions";
 import { questionStats } from "../lib/stats";
 import { castVote, deleteVote, reveal, setVisibility } from "../lib/votes";
@@ -212,4 +212,21 @@ test("who sees how many votes", () => {
   // Paid, before voting: the exact total, but no split until they vote or ask.
   const paidBefore = present(tally, { account: paidTier, voted: false });
   assert.deepEqual([paidBefore.split, paidBefore.sides, paidBefore.totalLabel], [null, null, "45,212 votes"]);
+});
+
+test("question detail is tiered: visitor, voter, member, API", async () => {
+  const freeTier = { tier: "free" as const }, paidTier = { tier: "paid" as const };
+  assert.equal(detailLevel(null, false), "visitor");
+  assert.equal(detailLevel(freeTier, false), "visitor");
+  assert.equal(detailLevel(freeTier, true), "voter");
+  assert.equal(detailLevel(paidTier, false), "member");
+  assert.equal(detailLevel(null, false, true), "api");
+
+  const stats = await questionStats(questionIds[0]);
+  const keys = (level: Parameters<typeof shapeStats>[1], est?: string) => Object.keys(shapeStats(stats, level, est)).sort();
+  assert.deepEqual(keys("visitor"), ["asOf", "percentages"]);
+  assert.deepEqual(keys("visitor", "<1k"), ["asOf", "estimatedVotes", "percentages"]);
+  assert.deepEqual(keys("voter"), ["asOf", "pctChangedMind", "percentages", "tally"]);
+  assert.deepEqual(keys("member"), ["asOf", "blindFirstVotes", "churn", "history", "pctChangedMind", "percentages", "tally", "visibility"]);
+  assert.deepEqual(keys("api"), ["activeSince", "asOf", "blindFirstVotes", "churn", "history", "pctChangedMind", "percentages", "sources", "tally", "visibility"]);
 });

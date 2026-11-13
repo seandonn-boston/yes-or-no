@@ -1,5 +1,5 @@
 import type { Tier } from "./limits";
-import { percentages, type Tally } from "./stats";
+import { percentages, type QuestionStats, type Tally } from "./stats";
 
 // How much anyone may know about the number of votes on a question.
 //   none      no account: percentages only
@@ -62,4 +62,43 @@ export function present(tally: Tally, viewer: Viewer): Shown {
       : access === "estimate" ? estimateLabel(tally.total)
       : null,
   };
+}
+
+// How much of a question's detail a viewer gets. Each level includes the ones before it.
+//   visitor  no account, or a free account that hasn't voted: the split only
+//   voter    free account after voting: exact counts and one headline figure
+//   member   paid account: conviction figures, the 14-day trend, public versus private
+//   api      API key: arrival routes, and the as_of / active_since filters
+// Pages never go above `member`; the deepest data is sold through the API.
+export type DetailLevel = "visitor" | "voter" | "member" | "api";
+
+export function detailLevel(account: { tier: Tier } | null, hasVoted: boolean, hasApiKey = false): DetailLevel {
+  if (hasApiKey) return "api";
+  if (account?.tier === "paid") return "member";
+  if (account && hasVoted) return "voter";
+  return "visitor";
+}
+
+// The stats API response for a given level. Nothing above the caller's level is included.
+export function shapeStats(stats: QuestionStats, level: DetailLevel, estimatedVotes?: string) {
+  const base = { asOf: stats.asOf, percentages: stats.percentages };
+  if (level === "visitor") return estimatedVotes ? { ...base, estimatedVotes } : base;
+  const voter = { ...base, tally: stats.tally, pctChangedMind: stats.churn.pctChangedMind };
+  if (level === "voter") return voter;
+  const member = {
+    ...voter,
+    churn: stats.churn,
+    blindFirstVotes: stats.blindFirstVotes,
+    visibility: stats.visibility,
+    history: stats.history,
+  };
+  if (level === "member") return member;
+  return { ...member, activeSince: stats.activeSince, sources: stats.sources };
+}
+
+// API keys come from the API_KEYS environment variable (comma-separated) until key management exists.
+export function isApiKey(authorization: string | null): boolean {
+  const key = authorization?.match(/^Bearer\s+(.+)$/i)?.[1]?.trim();
+  if (!key) return false;
+  return (process.env.API_KEYS ?? "").split(",").map((k) => k.trim()).filter(Boolean).includes(key);
 }

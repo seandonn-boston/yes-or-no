@@ -27,7 +27,7 @@ npm run dev
 - **Changing your mind.** One change per question per UTC day, on every tier. Delete withdraws the vote; the question goes back into the pool.
 - **History.** `vote_events` is append-only, so the state of any question at any past moment can be rebuilt.
 - **Feed.** Unanswered questions from three slots: random, contested, and new. Every vote records the slot or route it arrived by.
-- **Stats.** Split, share who changed once / more than once / recently, public versus private, blind first votes, arrival routes, and a 14-day trend, drawn with Highcharts. Breakdowns for groups smaller than `MIN_GROUP_SIZE` are withheld.
+- **Stats.** Split, share who changed once / more than once / recently, public versus private, blind first votes, arrival routes, and a 14-day trend, with charts drawn in Highcharts. How much of it a viewer gets depends on their tier (below). Breakdowns for groups smaller than `MIN_GROUP_SIZE` are withheld.
 - **Three layouts.** Compact single column, masonry tiles, or one question per screen with swipe-to-next. The switcher is in the header and the choice is kept in a cookie.
 - **Black theme.** True black background for OLED and QLED screens. Colour is used only for answers: blue for true, orange for false, grey for unsure.
 
@@ -39,7 +39,7 @@ npm run dev
 | Free account | A rounded total: `<1k`, `45K`, `8.2M` | Exact counts for each answer |
 | Paid account | Exact total | Exact counts for each answer |
 
-Signed-in viewers don't see the split itself until they vote or choose "Show results first". The rules live in `lib/access.ts` and apply to pages and the stats API alike; API keys will get the paid treatment.
+Signed-in viewers don't see the split itself until they vote or choose "Show results first". The rules live in `lib/access.ts` and apply to pages and the stats API alike.
 
 ## Daily limits
 
@@ -54,16 +54,29 @@ Signed-in viewers don't see the split itself until they vote or choose "Show res
 
 Set in `lib/limits.ts`. Tiers exist in the schema (`accounts.tier`); there is no payment flow yet.
 
+## Who sees how much detail
+
+The split rewards the vote; the depth is what membership and the API sell. Each level includes the ones before it.
+
+| Viewer | Question page | Stats API |
+|---|---|---|
+| No account, or free before voting | The split | Percentages (plus `estimatedVotes` for a free account) |
+| Free, after voting | Exact counts and one figure: the share who have changed their mind | The same |
+| Paid | Four conviction figures, the 14-day trend, public versus private | The same |
+| API key | (pages never show more than paid) | Arrival routes, plus the `as_of` and `active_since` filters |
+
 ## Stats API
 
 ```
+GET /api/questions/:id/stats
 GET /api/questions/:id/stats?as_of=2026-11-01T00:00:00Z&active_since=2026-10-13T00:00:00Z
+Authorization: Bearer <key>
 ```
 
 - `as_of`: the vote as it stood at that moment. Defaults to now.
 - `active_since`: count only accounts active at or after that moment.
 
-What comes back follows the table above: percentages only, percentages plus `estimatedVotes`, or the full set.
+Both filters need an API key. Keys are listed in the `API_KEYS` environment variable until key management exists. The response includes an `access` field naming the level it was served at.
 
 ## Layout
 
@@ -87,5 +100,5 @@ Highcharts is free for personal and non-commercial use and needs a paid licence 
 - Verification, attribute attestations (home state, age band), and demographic filters
 - Follows, profiles, categories and tags
 - Question families, event dates, archiving and "Did X happen?" successors
-- Payments, API keys, embeds, reporting and moderator tools
+- Payments, API key management and metering, embeds, reporting and moderator tools
 - Search cap for visitors without an account

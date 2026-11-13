@@ -1,20 +1,19 @@
-import { countAccess, estimate } from "@/lib/access";
+import { countAccess, detailLevel, estimate, isApiKey, shapeStats } from "@/lib/access";
 import { getAccount } from "@/lib/auth";
 import { getQuestion } from "@/lib/questions";
-import { publicView, questionStats } from "@/lib/stats";
+import { questionStats } from "@/lib/stats";
 import { myVotes } from "@/lib/votes";
 
-// GET /api/questions/:id/stats?as_of=<ISO time>&active_since=<ISO time>
-//
-//   as_of         reconstruct the vote as it stood at that moment (default: now)
-//   active_since  only count accounts that have been active at or after that moment
+// GET /api/questions/:id/stats
 //
 // What comes back depends on who is asking (see lib/access.ts):
-//   no account                 percentages only
-//   free account, not voted    percentages plus a rounded estimate of the vote count
-//   free account after voting, exact counts, churn, the public/private split and arrival
-//   or any paid account        sources
-// API keys will join the paid branch when the API tiers exist.
+//   no account                  percentages
+//   free account, not voted     percentages and a rounded estimate of the vote count
+//   free account, voted         exact counts and the share who have changed their mind
+//   paid account                conviction figures, 14-day history, public versus private
+//   API key (Authorization:     all of the above, arrival routes, and two filters:
+//   Bearer <key>)                 as_of=<ISO time>         the vote as it stood at that moment
+//                                 active_since=<ISO time>  only accounts active since then
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const questionId = Number(id);
@@ -24,6 +23,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const question = await getQuestion(questionId);
   if (!question) return Response.json({ error: "Question not found." }, { status: 404 });
 
+  const hasKey = isApiKey(request.headers.get("authorization"));
   const url = new URL(request.url);
   const parse = (key: string) => {
     const raw = url.searchParams.get(key);
@@ -36,16 +36,19 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   if (asOf === null || activeSince === null) {
     return Response.json({ error: "as_of and active_since must be ISO 8601 times." }, { status: 400 });
   }
+  if ((asOf || activeSince) && !hasKey) {
+    return Response.json({ error: "The as_of and active_since filters need an API key." }, { status: 403 });
+  }
 
   const stats = await questionStats(questionId, { asOf, activeSince });
-  const account = await getAccount();
+  const account = hasKey ? null : await getAccount();
   const voted = account ? (await myVotes(account.id, [questionId])).has(questionId) : false;
-  const access = countAccess(account, voted);
+  const level = detailLevel(account, voted, hasKey);
+  const estimated = countAccess(account, voted) === "estimate" ? estimate(stats.tally.total) : undefined;
+
   return Response.json({
     question: { id: question.id, text: question.text, status: question.status, askedAt: question.created_at },
-    stats:
-      access === "full" ? stats
-      : access === "estimate" ? { ...publicView(stats), estimatedVotes: estimate(stats.tally.total) }
-      : publicView(stats),
+    access: level,
+    stats: shapeStats(stats, level, estimated),
   });
 }
