@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { pool, query } from "../lib/db";
 import type { Account } from "../lib/auth";
+import { countAccess, estimate, present } from "../lib/access";
 import { ask, booleanProblem, normalize, search, tidy } from "../lib/questions";
 import { questionStats } from "../lib/stats";
 import { castVote, deleteVote, reveal, setVisibility } from "../lib/votes";
@@ -162,7 +163,7 @@ test("stats can be reconstructed for any past moment", async () => {
   assert.equal(now.churn.pctChangedOnce, 33.3);
   assert.equal(now.churn.changedInLast7Days, 2);
   assert.equal(now.blindFirstVotes.count, 6);
-  assert.deepEqual(now.visibility.public, { total: 6, pctTrue: 66.7 });
+  assert.deepEqual(now.visibility.public, { total: 6, pctTrue: 66.7, pctFalse: 33.3, pctUnsure: 0 });
   assert.equal(now.visibility.private, null); // below the minimum group size
   assert.equal(now.history.length, 14);
   assert.equal(now.history.at(-1)!.pctTrue, 66.7);
@@ -177,4 +178,38 @@ test("stats can be reconstructed for any past moment", async () => {
   ]);
   const recent = await questionStats(id, { activeSince: new Date(Date.now() - 30 * 86_400_000) });
   assert.deepEqual(recent.tally, { true: 2, false: 0, unsure: 0, total: 2 });
+});
+
+test("vote counts are estimated before a free account votes", () => {
+  const cases: [number, string][] = [
+    [0, "<1k"], [999, "<1k"], [1000, "1K"], [4512, "4.5K"], [9999, "9.9K"], [45212, "45K"],
+    [999999, "999K"], [1000000, "1M"], [8240000, "8.2M"], [45000000, "45M"], [2300000000, "2.3B"],
+  ];
+  for (const [n, expected] of cases) assert.equal(estimate(n), expected, String(n));
+});
+
+test("who sees how many votes", () => {
+  const freeTier = { tier: "free" as const }, paidTier = { tier: "paid" as const };
+  assert.equal(countAccess(null, false), "none");
+  assert.equal(countAccess(freeTier, false), "estimate");
+  assert.equal(countAccess(freeTier, true), "full");
+  assert.equal(countAccess(paidTier, false), "full");
+
+  const tally = { true: 30000, false: 14000, unsure: 1212, total: 45212 };
+  // No account: the split, and nothing about how many voted.
+  const visitor = present(tally, { account: null, voted: false });
+  assert.deepEqual([visitor.split?.true, visitor.sides, visitor.totalLabel], [66.4, null, null]);
+  // Free, before voting: no split, a rounded total.
+  const before = present(tally, { account: freeTier, voted: false });
+  assert.deepEqual([before.split, before.sides, before.totalLabel], [null, null, "about 45K votes"]);
+  assert.equal(present({ ...tally, total: 312 }, { account: freeTier, voted: false }).totalLabel, "<1k votes");
+  // Free, after asking to see results first: the split, still only a rounded total.
+  const peeked = present(tally, { account: freeTier, voted: false, revealed: true });
+  assert.deepEqual([peeked.split?.true, peeked.sides, peeked.totalLabel], [66.4, null, "about 45K votes"]);
+  // Free, after voting: exact counts on every side.
+  const after = present(tally, { account: freeTier, voted: true });
+  assert.deepEqual([after.sides, after.totalLabel], [tally, "45,212 votes"]);
+  // Paid, before voting: the exact total, but no split until they vote or ask.
+  const paidBefore = present(tally, { account: paidTier, voted: false });
+  assert.deepEqual([paidBefore.split, paidBefore.sides, paidBefore.totalLabel], [null, null, "45,212 votes"]);
 });

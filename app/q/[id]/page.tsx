@@ -1,25 +1,28 @@
 import { notFound } from "next/navigation";
 import { revealAction, visibilityAction } from "@/app/actions";
+import { Chart } from "@/components/Chart";
 import { ErrorBanner, Header } from "@/components/Header";
 import { QuestionCard } from "@/components/QuestionCard";
+import { countAccess, present } from "@/lib/access";
 import { getAccount } from "@/lib/auth";
+import { arrivalChart, trendChart, visibilityChart } from "@/lib/charts";
 import { getQuestion } from "@/lib/questions";
-import { questionStats, type GroupStat, type QuestionStats } from "@/lib/stats";
+import { questionStats, type QuestionStats } from "@/lib/stats";
 import { hasRevealed, myVotes } from "@/lib/votes";
 
-type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string; voted?: string }> };
 
 const SOURCE_LABELS: Record<string, string> = {
-  "feed:random": "Random feed slot",
-  "feed:contested": "Contested feed slot",
-  "feed:fresh": "New questions feed slot",
+  "feed:random": "Random slot",
+  "feed:contested": "Contested slot",
+  "feed:fresh": "New questions",
   "feed:top": "Home page",
   search: "Search",
   direct: "Direct link",
 };
 
 export default async function QuestionPage({ params, searchParams }: Props) {
-  const [{ id }, { error }] = await Promise.all([params, searchParams]);
+  const [{ id }, { error, voted }] = await Promise.all([params, searchParams]);
   const questionId = Number(id);
   if (!Number.isInteger(questionId) || questionId <= 0) notFound();
   const question = await getQuestion(questionId);
@@ -33,26 +36,31 @@ export default async function QuestionPage({ params, searchParams }: Props) {
   ]);
   const myVote = mine.get(questionId);
   const back = `/q/${questionId}`;
-  const canSeeResults = !account || Boolean(myVote) || revealed || question.status !== "active";
+  const shown = present(stats.tally, {
+    account, voted: Boolean(myVote), revealed, closed: question.status !== "active",
+  });
+  const exact = countAccess(account, Boolean(myVote)) === "full";
 
   return (
     <>
       <Header />
-      <main>
+      <main className="wrap wrap-narrow">
         <ErrorBanner message={error} />
-        <QuestionCard
-          question={question}
-          tally={stats.tally}
-          myVote={myVote}
-          signedIn={Boolean(account)}
-          source="direct"
-          back={back}
-          revealed={revealed}
-          linkTitle={false}
-        />
+        <div className="feed feed-detail">
+          <QuestionCard
+            question={question}
+            shown={shown}
+            myVote={myVote}
+            signedIn={Boolean(account)}
+            source="direct"
+            back={back}
+            linkTitle={false}
+            reveal={Boolean(voted)}
+          />
+        </div>
 
         {account && myVote && (
-          <form action={visibilityAction} className="card inline-form">
+          <form action={visibilityAction} className="aside-form">
             <input type="hidden" name="questionId" value={questionId} />
             <input type="hidden" name="back" value={back} />
             <input type="hidden" name="to" value={myVote.is_private ? "public" : "private"} />
@@ -61,98 +69,97 @@ export default async function QuestionPage({ params, searchParams }: Props) {
           </form>
         )}
 
-        {!canSeeResults && (
-          <form action={revealAction} className="card inline-form">
+        {!shown.split && (
+          <form action={revealAction} className="aside-form">
             <input type="hidden" name="questionId" value={questionId} />
             <input type="hidden" name="back" value={back} />
-            <span className="muted">Voting before you see the results keeps your answer your own.</span>
+            <span>Voting before you see the results keeps your answer your own.</span>
             <button className="link">Show results first</button>
           </form>
         )}
 
-        {canSeeResults && stats.tally.total > 0 && <Details stats={stats} signedIn={Boolean(account)} />}
+        {shown.split && shown.hasVotes && <Details stats={stats} exact={exact} />}
       </main>
     </>
   );
 }
 
-function Details({ stats, signedIn }: { stats: QuestionStats; signedIn: boolean }) {
+function Details({ stats, exact }: { stats: QuestionStats; exact: boolean }) {
   const { churn, visibility, blindFirstVotes, sources, history } = stats;
-  const n = (x: number) => (signedIn ? ` (${x.toLocaleString("en-US")})` : "");
+  const count = (x: number) => (exact ? `${x.toLocaleString("en-US")} people` : null);
+  const tiles = [
+    { value: churn.pctChangedOnce, label: "changed their vote once", sub: count(churn.changedOnce) },
+    { value: churn.pctChangedMoreThanOnce, label: "changed it more than once", sub: count(churn.changedMoreThanOnce) },
+    { value: churn.pctChangedInLast7Days, label: "changed or withdrew this week", sub: count(churn.changedInLast7Days) },
+    { value: blindFirstVotes.pct, label: "voted before seeing results", sub: count(blindFirstVotes.count) },
+  ];
+  const days = history.filter((h) => h.total > 0);
+  const first = days[0], last = days[days.length - 1];
+  const arrivals = sources.map((s) => ({ label: SOURCE_LABELS[s.source] ?? s.source, votes: s.votes }));
+
   return (
     <>
-      <section className="card">
+      <section className="block">
         <h2>How firmly people hold this</h2>
-        <dl className="stats">
-          <div><dt>Changed their vote once</dt><dd>{churn.pctChangedOnce}%{n(churn.changedOnce)}</dd></div>
-          <div><dt>Changed more than once</dt><dd>{churn.pctChangedMoreThanOnce}%{n(churn.changedMoreThanOnce)}</dd></div>
-          <div><dt>Changed or withdrew in the last 7 days</dt><dd>{churn.pctChangedInLast7Days}%{n(churn.changedInLast7Days)}</dd></div>
-          <div><dt>Voted before seeing results</dt><dd>{blindFirstVotes.pct}%{n(blindFirstVotes.count)}</dd></div>
-        </dl>
-        <p className="muted small">Shares of everyone who has ever voted on this question.</p>
+        <ul className="tiles">
+          {tiles.map((t) => (
+            <li key={t.label}>
+              <span className="tile-value">{t.value}%</span>
+              <span className="tile-label">{t.label}</span>
+              {t.sub && <span className="tile-sub">{t.sub}</span>}
+            </li>
+          ))}
+        </ul>
+        <p className="note">Shares of everyone who has ever voted on this question.</p>
       </section>
 
-      <section className="card">
-        <h2>Public and private votes</h2>
-        <dl className="stats">
-          <GroupRow label="Public votes saying true" group={visibility.public} signedIn={signedIn} />
-          <GroupRow label="Private votes saying true" group={visibility.private} signedIn={signedIn} />
-        </dl>
-        <p className="muted small">A gap here is the difference between what people say with and without their name attached.</p>
+      <section className="block">
+        <h2>Over the last 14 days</h2>
+        {days.length >= 2 ? (
+          <>
+            <Chart
+              options={trendChart(history)}
+              label={`Share answering true went from ${first.pctTrue}% on ${first.day} to ${last.pctTrue}% on ${last.day}; false went from ${first.pctFalse}% to ${last.pctFalse}%.`}
+            />
+            <p className="note">
+              True moved from {first.pctTrue}% to {last.pctTrue}%, false from {first.pctFalse}% to {last.pctFalse}%.
+              The dashed line marks an even split.
+            </p>
+          </>
+        ) : (
+          <p className="note">Not enough history yet.</p>
+        )}
       </section>
 
-      <section className="card">
-        <h2>Last 14 days</h2>
-        <Trend history={history} />
+      <section className="block">
+        <h2>With a name attached, and without</h2>
+        {visibility.public && visibility.private ? (
+          <>
+            <Chart
+              options={visibilityChart(visibility.public, visibility.private)}
+              label={`Public votes: ${visibility.public.pctTrue}% true, ${visibility.public.pctFalse}% false. Private votes: ${visibility.private.pctTrue}% true, ${visibility.private.pctFalse}% false.`}
+            />
+            <p className="note">
+              {visibility.public.pctTrue}% of public votes say true, against {visibility.private.pctTrue}% of private ones
+              {exact && ` (${visibility.public.total.toLocaleString("en-US")} public, ${visibility.private.total.toLocaleString("en-US")} private)`}.
+              A gap is the difference between what people say with and without their name on it.
+            </p>
+          </>
+        ) : (
+          <p className="note">Too few public or private votes to compare yet.</p>
+        )}
       </section>
 
-      {signedIn && sources.length > 0 && (
-        <section className="card">
+      {exact && arrivals.length > 0 && (
+        <section className="block">
           <h2>How voters arrived</h2>
-          <dl className="stats">
-            {sources.map((s) => (
-              <div key={s.source}><dt>{SOURCE_LABELS[s.source] ?? s.source}</dt><dd>{s.votes.toLocaleString("en-US")}</dd></div>
-            ))}
-          </dl>
+          <Chart
+            options={arrivalChart(arrivals)}
+            label={arrivals.map((a) => `${a.label}: ${a.votes} first votes`).join(", ")}
+          />
+          <p className="note">A surge from direct links can mean a question is being passed around to stack the vote.</p>
         </section>
       )}
-    </>
-  );
-}
-
-function GroupRow({ label, group, signedIn }: { label: string; group: GroupStat; signedIn: boolean }) {
-  return (
-    <div>
-      <dt>{label}</dt>
-      <dd>
-        {group ? `${group.pctTrue}%${signedIn ? ` of ${group.total.toLocaleString("en-US")}` : ""}` : "Too few to show"}
-      </dd>
-    </div>
-  );
-}
-
-// Share voting "true" per day, as a simple line.
-function Trend({ history }: { history: QuestionStats["history"] }) {
-  const points = history.filter((h) => h.total > 0);
-  if (points.length < 2) return <p className="muted">Not enough history yet.</p>;
-  const w = 320, h = 90, pad = 6;
-  const x = (i: number) => pad + (i * (w - pad * 2)) / (history.length - 1);
-  const y = (p: number) => pad + ((100 - p) * (h - pad * 2)) / 100;
-  const line = history
-    .map((d, i) => (d.total > 0 ? `${x(i).toFixed(1)},${y(d.pctTrue).toFixed(1)}` : null))
-    .filter(Boolean)
-    .join(" ");
-  const first = points[0], last = points[points.length - 1];
-  return (
-    <>
-      <svg viewBox={`0 0 ${w} ${h}`} className="trend" role="img"
-        aria-label={`Share voting true went from ${first.pctTrue}% on ${first.day} to ${last.pctTrue}% on ${last.day}`}>
-        <line x1={pad} x2={w - pad} y1={y(50)} y2={y(50)} className="mid" />
-        <polyline points={line} />
-      </svg>
-      <p className="muted small">
-        Share voting true: {first.pctTrue}% on {first.day}, {last.pctTrue}% on {last.day}. Dashed line marks 50%.
-      </p>
     </>
   );
 }

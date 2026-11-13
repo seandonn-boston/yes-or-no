@@ -1,11 +1,13 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { query } from "@/lib/db";
 import {
   endSession, getAccount, hashPassword, hashPhone, normalizePhone, startSession, verifyPassword,
 } from "@/lib/auth";
 import { ask } from "@/lib/questions";
+import { VIEW_COOKIE, VIEWS, type View } from "@/lib/view";
 import {
   castVote, deleteVote, reveal, setVisibility, skip, SOURCES, VOTE_VALUES, type Source, type VoteValue,
 } from "@/lib/votes";
@@ -154,5 +156,14 @@ export async function revealAction(form: FormData) {
   const account = await requireAccount(form);
   const id = questionId(form);
   if (id) await reveal(account, id);
+  redirect(withoutError(backPath(form)));
+}
+
+// Remember how this browser likes its question lists laid out.
+export async function setViewAction(form: FormData) {
+  const view = str(form, "view") as View;
+  if (VIEWS.includes(view)) {
+    (await cookies()).set(VIEW_COOKIE, view, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
+  }
   redirect(withoutError(backPath(form)));
 }

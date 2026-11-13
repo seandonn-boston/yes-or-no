@@ -30,7 +30,7 @@ export type StatsOptions = {
   activeSince?: Date;   // only count accounts active at or after this moment
 };
 
-export type GroupStat = { total: number; pctTrue: number } | null; // null = below the minimum group size
+export type GroupStat = { total: number; pctTrue: number; pctFalse: number; pctUnsure: number } | null; // null = below the minimum group size
 
 export type QuestionStats = {
   asOf: string;
@@ -60,8 +60,10 @@ const LATEST = `
      and ($3::timestamptz is null or a.last_active_at >= $3)
    order by e.account_id, e.created_at desc, e.id desc`;
 
-const group = (total: number, trueCount: number): GroupStat =>
-  total >= MIN_GROUP_SIZE ? { total, pctTrue: pct(trueCount, total) } : null;
+const group = (total: number, t: number, f: number): GroupStat =>
+  total >= MIN_GROUP_SIZE
+    ? { total, pctTrue: pct(t, total), pctFalse: pct(f, total), pctUnsure: pct(total - t - f, total) }
+    : null;
 
 // Everything is computed from vote_events, so any past moment can be reconstructed.
 export async function questionStats(questionId: number, opts: StatsOptions = {}): Promise<QuestionStats> {
@@ -70,15 +72,17 @@ export async function questionStats(questionId: number, opts: StatsOptions = {})
   const params = [questionId, asOf, activeSince];
 
   const [[now], [churn], sources, history] = await Promise.all([
-    query<{ t: number; f: number; u: number; pub_n: number; pub_t: number; priv_n: number; priv_t: number }>(
+    query<{ t: number; f: number; u: number; pub_n: number; pub_t: number; pub_f: number; priv_n: number; priv_t: number; priv_f: number }>(
       `with latest as (${LATEST})
        select count(*) filter (where value = 'true')::int   as t,
               count(*) filter (where value = 'false')::int  as f,
               count(*) filter (where value = 'unsure')::int as u,
               count(*) filter (where not is_private)::int                    as pub_n,
               count(*) filter (where not is_private and value = 'true')::int as pub_t,
+              count(*) filter (where not is_private and value = 'false')::int as pub_f,
               count(*) filter (where is_private)::int                        as priv_n,
-              count(*) filter (where is_private and value = 'true')::int     as priv_t
+              count(*) filter (where is_private and value = 'true')::int     as priv_t,
+              count(*) filter (where is_private and value = 'false')::int    as priv_f
          from latest where value is not null`,
       params,
     ),
@@ -148,7 +152,7 @@ export async function questionStats(questionId: number, opts: StatsOptions = {})
       pctChangedInLast7Days: pct(churn.recent, churn.ever),
     },
     blindFirstVotes: { count: churn.blind_n, pct: pct(churn.blind_n, churn.ever) },
-    visibility: { public: group(now.pub_n, now.pub_t), private: group(now.priv_n, now.priv_t) },
+    visibility: { public: group(now.pub_n, now.pub_t, now.pub_f), private: group(now.priv_n, now.priv_t, now.priv_f) },
     sources: sources.filter((s) => s.votes >= MIN_GROUP_SIZE),
     history: history.map((h) => {
       const total = h.t + h.f + h.u;

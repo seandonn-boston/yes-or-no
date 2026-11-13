@@ -27,8 +27,19 @@ npm run dev
 - **Changing your mind.** One change per question per UTC day, on every tier. Delete withdraws the vote; the question goes back into the pool.
 - **History.** `vote_events` is append-only, so the state of any question at any past moment can be rebuilt.
 - **Feed.** Unanswered questions from three slots: random, contested, and new. Every vote records the slot or route it arrived by.
-- **Stats.** Split, share who changed once / more than once / recently, public versus private, blind first votes, arrival routes, and a 14-day trend. Breakdowns for groups smaller than `MIN_GROUP_SIZE` are withheld.
-- **Who sees what.** Without an account: percentages only. With one: head counts too.
+- **Stats.** Split, share who changed once / more than once / recently, public versus private, blind first votes, arrival routes, and a 14-day trend, drawn with Highcharts. Breakdowns for groups smaller than `MIN_GROUP_SIZE` are withheld.
+- **Three layouts.** Compact single column, masonry tiles, or one question per screen with swipe-to-next. The switcher is in the header and the choice is kept in a cookie.
+- **Black theme.** True black background for OLED and QLED screens. Colour is used only for answers: blue for true, orange for false, grey for unsure.
+
+## Who sees how many votes
+
+| Viewer | Before voting | After voting |
+|---|---|---|
+| No account | Percentages only | n/a |
+| Free account | A rounded total: `<1k`, `45K`, `8.2M` | Exact counts for each answer |
+| Paid account | Exact total | Exact counts for each answer |
+
+Signed-in viewers don't see the split itself until they vote or choose "Show results first". The rules live in `lib/access.ts` and apply to pages and the stats API alike; API keys will get the paid treatment.
 
 ## Daily limits
 
@@ -52,17 +63,22 @@ GET /api/questions/:id/stats?as_of=2026-11-01T00:00:00Z&active_since=2026-10-13T
 - `as_of`: the vote as it stood at that moment. Defaults to now.
 - `active_since`: count only accounts active at or after that moment.
 
-Signed-out callers get percentages and the trend. Signed-in callers get the full set. API keys and tiers will replace the session check.
+What comes back follows the table above: percentages only, percentages plus `estimatedVotes`, or the full set.
 
 ## Layout
 
 ```
 app/            pages, server actions (app/actions.ts), the stats API route
-components/     question card, result bar, header
-lib/            auth, questions (search, ask), votes (rules), stats, feed, limits, moderation
+components/     question card, split bar, chart wrapper, layout switcher, header
+lib/            auth, questions (search, ask), votes (rules), stats, charts, access (count gating),
+                feed, view (layout preference), limits, moderation
 db/             SQL migrations, migration runner, seed data
 tests/          rule tests
 ```
+
+## Highcharts licence
+
+Highcharts is free for personal and non-commercial use and needs a paid licence for commercial use. All charts go through `components/Chart.tsx` and `lib/charts.ts`, so swapping in another library touches two files.
 
 ## Not built yet
 

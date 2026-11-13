@@ -9,16 +9,16 @@ export default async function LoginPage({ searchParams }: Props) {
   return (
     <>
       <Header />
-      <main>
-        <h1>Sign in</h1>
+      <main className="wrap wrap-narrow">
+        <h1 className="page-title">Sign in</h1>
         <ErrorBanner message={error} />
-        <form action={loginAction} className="card form">
+        <form action={loginAction} className="form">
           <input type="hidden" name="back" value={next} />
           <label>Username<input name="username" autoComplete="username" required /></label>
           <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
-          <button className="primary">Sign in</button>
+          <button className="btn solid">Sign in</button>
         </form>
-        <p className="small">New here? <Link href={`/signup?next=${encodeURIComponent(next)}`}>Create an account</Link>.</p>
+        <p className="q-join">New here? <Link href={`/signup?next=${encodeURIComponent(next)}`}>Create an account</Link>.</p>
       </main>
     </>
   );

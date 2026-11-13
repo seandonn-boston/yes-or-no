@@ -9,16 +9,16 @@ export default async function SignupPage({ searchParams }: Props) {
   return (
     <>
       <Header />
-      <main>
-        <h1>Create an account</h1>
+      <main className="wrap wrap-narrow">
+        <h1 className="page-title">Create an account</h1>
         <ErrorBanner message={error} />
-        <form action={signupAction} className="card form">
+        <form action={signupAction} className="form">
           <input type="hidden" name="back" value={next} />
           <label>Username<input name="username" autoComplete="username" required minLength={3} maxLength={20} /></label>
           <label>
             Phone number
             <input name="phone" type="tel" autoComplete="tel" required />
-            <span className="muted small">One account per number. It is stored only as a one-way hash and never shared.</span>
+            <span className="field-note">One account per number. It is stored only as a one-way hash and never shared.</span>
           </label>
           <label>Password<input name="password" type="password" autoComplete="new-password" required minLength={8} /></label>
           <label className="check"><input type="checkbox" name="adult" required /> I am 18 or older.</label>
@@ -26,9 +26,9 @@ export default async function SignupPage({ searchParams }: Props) {
             <input type="checkbox" name="consent" required /> I agree that my votes are recorded and used, without my
             name, in published results and data.
           </label>
-          <button className="primary">Create account</button>
+          <button className="btn solid">Create account</button>
         </form>
-        <p className="small">Already have one? <Link href={`/login?next=${encodeURIComponent(next)}`}>Sign in</Link>.</p>
+        <p className="q-join">Already have one? <Link href={`/login?next=${encodeURIComponent(next)}`}>Sign in</Link>.</p>
       </main>
     </>
   );

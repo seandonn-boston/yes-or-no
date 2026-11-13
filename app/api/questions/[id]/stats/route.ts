@@ -1,15 +1,20 @@
+import { countAccess, estimate } from "@/lib/access";
 import { getAccount } from "@/lib/auth";
 import { getQuestion } from "@/lib/questions";
 import { publicView, questionStats } from "@/lib/stats";
+import { myVotes } from "@/lib/votes";
 
 // GET /api/questions/:id/stats?as_of=<ISO time>&active_since=<ISO time>
 //
 //   as_of         reconstruct the vote as it stood at that moment (default: now)
 //   active_since  only count accounts that have been active at or after that moment
 //
-// Without a session the response holds percentages only. Signed-in callers also get head
-// counts, churn, the public/private split and arrival sources. API keys will replace the
-// session check when the API tiers exist.
+// What comes back depends on who is asking (see lib/access.ts):
+//   no account                 percentages only
+//   free account, not voted    percentages plus a rounded estimate of the vote count
+//   free account after voting, exact counts, churn, the public/private split and arrival
+//   or any paid account        sources
+// API keys will join the paid branch when the API tiers exist.
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const questionId = Number(id);
@@ -34,8 +39,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
   const stats = await questionStats(questionId, { asOf, activeSince });
   const account = await getAccount();
+  const voted = account ? (await myVotes(account.id, [questionId])).has(questionId) : false;
+  const access = countAccess(account, voted);
   return Response.json({
     question: { id: question.id, text: question.text, status: question.status, askedAt: question.created_at },
-    stats: account ? stats : publicView(stats),
+    stats:
+      access === "full" ? stats
+      : access === "estimate" ? { ...publicView(stats), estimatedVotes: estimate(stats.tally.total) }
+      : publicView(stats),
   });
 }
