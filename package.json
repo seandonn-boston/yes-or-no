@@ -1,0 +1,31 @@
+{
+  "name": "yes-or-no",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db:migrate": "tsx --env-file=.env.local db/migrate.ts",
+    "db:seed": "tsx --env-file=.env.local db/seed.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --env-file=.env.local --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "next": "16.4.6",
+    "pg": "^8.23.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  }
+}
